@@ -4,6 +4,16 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
+    <servlet>
+        <servlet-name>mainPage</servlet-name>
+        <jsp-file>/mainPage.jsp</jsp-file>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>mainPage</servlet-name>
+        <url-pattern>/meetings</url-pattern>
+    </servlet-mapping>
+    
     <listener>
         <listener-class>com.epam.rd.fp.service.LiquibaseInitializer</listener-class>
     </listener>

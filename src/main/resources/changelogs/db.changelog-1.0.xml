@@ -74,6 +74,68 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create_location_table" author="Vasyl Veselov">
+        <createTable tableName="location">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="country" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="street" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="house" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="room" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+
+
+    <changeSet id="create_meeting_topic_table" author="Vasyl Veselov">
+        <createTable tableName="meeting_topic">
+            <column name="meeting_id" type="INT">
+                <constraints foreignKeyName="meeting_id" nullable="false" references="meeting(id)"/>
+            </column>
+            <column name="topic_id" type="INT">
+                <constraints foreignKeyName="topic_id" nullable="false" references="topic(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_registered_users_table" author="Vasyl Veselov">
+        <createTable tableName="registered_users">
+            <column name="meeting_id" type="INT">
+                <constraints foreignKeyName="fk_meeting_id" nullable="false" references="meeting(id)"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints foreignKeyName="user_id" nullable="false" references="users(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_meeting_location_table" author="Vasyl Veselov">
+        <createTable tableName="meeting_location">
+            <column name="meeting_id" type="INT">
+                <constraints foreignKeyName="foreign_key_meeting_id" nullable="false" references="meeting(id)"/>
+            </column>
+            <column name="location_id" type="INT">
+                <constraints foreignKeyName="location_id" nullable="false" references="location(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 
     <changeSet author="Vasyl Veselov" id="fill_meeting_table">
         <insert tableName="meeting">
@@ -101,29 +163,15 @@
         </insert>
     </changeSet>
 
-
-    <changeSet id="create_meeting_topic_table" author="Vasyl Veselov">
-        <createTable tableName="meeting_topic">
-            <column name="meeting_id" type="INT">
-                <constraints foreignKeyName="meeting_id" nullable="false" references="meeting(id)"/>
-            </column>
-            <column name="topic_id" type="INT">
-                <constraints foreignKeyName="topic_id" nullable="false" references="topic(id)"/>
-            </column>
-        </createTable>
+    <changeSet author="Vasyl Veselov" id="fill_location_table">
+        <insert tableName="location">
+            <column name="country" value="Ukraine"/>
+            <column name="city" value="Zhytomyr"/>
+            <column name="street" value="Pushkina 23"/>
+            <column name="house" value="23"/>
+            <column name="room" value="14"/>
+            <column name="language" value="EN"/>
+        </insert>
     </changeSet>
-
-    <changeSet id="create_registered_users_table" author="Vasyl Veselov">
-        <createTable tableName="registered_users">
-            <column name="meeting_id" type="INT">
-                <constraints foreignKeyName="fk_meeting_id" nullable="false" references="meeting(id)"/>
-            </column>
-            <column name="user_id" type="INT">
-                <constraints foreignKeyName="user_id" nullable="false" references="users(id)"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-
 </databaseChangeLog>
 
