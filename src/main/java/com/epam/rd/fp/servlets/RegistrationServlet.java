@@ -1,5 +1,6 @@
 package com.epam.rd.fp.servlets;
 
+import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Role;
 import com.epam.rd.fp.service.DBManager;
@@ -32,12 +33,8 @@ public class RegistrationServlet extends HttpServlet {
               role = Role.MODERATOR;
       }
         User user = new User(firstName, lastName, password, email, role);
-        DBManager dbManager = DBManager.getInstance();
-        try {
-            dbManager.insertUser(user);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        UserDao userDao = new UserDao();
+        userDao.insertUser(user);
         checkRoleAndForward(request, response, user);
     }
 

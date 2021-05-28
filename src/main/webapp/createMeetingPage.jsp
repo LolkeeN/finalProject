@@ -7,7 +7,7 @@
 <form action="createMeeting" method="get">
     <b>Name -> </b><input name="name"/><br/>
     <b>Date -> </b><input name="date"/><br/>
-    <b>Topic -> </b><input name="topic"/><br/>
+    <b>Location id -> </b><input name="location_id"/><br/>
     <b>language -> </b><input name="language"/><br/>
     <input type="submit" value="Create meeting"/>
 </form>

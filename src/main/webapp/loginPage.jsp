@@ -6,7 +6,7 @@
 </head>
 <body>
 <form action="login" method="get">
-    <input name="email" value="admin"/><br/>
+    <input name="email" value="your email"/><br/>
     <input type="password" name="password" /><br/>
     <input type="submit" value="Login"/>
 </form>

@@ -71,13 +71,8 @@
             <column name="description" type="varchar(500)">
                 <constraints nullable="false"/>
             </column>
-            <column name="speaker_id" type="INT">
-                <constraints foreignKeyName="speakerId" references="users(id)" nullable="true"/>
-            </column>
         </createTable>
     </changeSet>
-
-
 
     <changeSet id="create_meeting_table" author="Vasyl Veselov">
         <createTable tableName="meeting">
@@ -89,12 +84,6 @@
             </column>
             <column name="date" type="varchar(255)">
                 <constraints nullable="false"/>
-            </column>
-            <column name="topic_id" type="INT">
-                <constraints foreignKeyName="topicId" references="topic(id)" nullable="false"/>
-            </column>
-            <column name="location_id" type="INT">
-                <constraints foreignKeyName="locationId" references="location(id)" nullable="false"/>
             </column>
             <column name="language" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -116,10 +105,10 @@
     <changeSet id="create_meeting_topic_table" author="Vasyl Veselov">
         <createTable tableName="meeting_topic">
             <column name="meeting_id" type="INT">
-                <constraints foreignKeyName="meeting_id" nullable="false" references="meeting(id)"/>
+                <constraints foreignKeyName="for_key_meeting_id" nullable="false" references="meeting(id)"/>
             </column>
             <column name="topic_id" type="INT">
-                <constraints foreignKeyName="topic_id" nullable="false" references="topic(id)"/>
+                <constraints foreignKeyName="for_key_topic_id" nullable="false" references="topic(id)"/>
             </column>
         </createTable>
     </changeSet>
@@ -131,6 +120,17 @@
             </column>
             <column name="location_id" type="INT">
                 <constraints foreignKeyName="location_id" nullable="false" references="location(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_topic_speaker_table" author="Vasyl Veselov">
+        <createTable tableName="topic_speaker">
+            <column name="fk_topic_id" type="INT">
+                <constraints foreignKeyName="foreign_key_topic_id" nullable="false" references="topic(id)"/>
+            </column>
+            <column name="speaker_id" type="INT">
+                <constraints foreignKeyName="speaker_id" nullable="false" references="users(id)"/>
             </column>
         </createTable>
     </changeSet>
@@ -173,8 +173,6 @@
             <column name="name" value="gagagag"/>
             <column name="date" value="01.06.2021"/>
             <column name="language" value="EN"/>
-            <column name="topic_id" value="1"/>
-            <column name="location_id" value="1"/>
         </insert>
 
 

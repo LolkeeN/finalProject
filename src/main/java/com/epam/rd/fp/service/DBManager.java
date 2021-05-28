@@ -1,10 +1,13 @@
 package com.epam.rd.fp.service;
 
+import com.epam.rd.fp.dao.TopicDao;
 import com.epam.rd.fp.model.Location;
 import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Role;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,15 +18,15 @@ import java.util.List;
 import java.util.Properties;
 
 public class DBManager {
+    private static final Logger log = LogManager.getLogger(TopicDao.class);
     private static final DBManager dbManager = new DBManager();
-    //    private static final String APP_SETTINGS = "app.properties";
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     private DBManager() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.error("No suitable driver found", e);
         }
     }
 
@@ -35,118 +38,32 @@ public class DBManager {
         return DriverManager.getConnection(conn);
     }
 
-    public void insertUser(User user) throws SQLException {
-        ResultSet rs;
-        try (Connection conn = getConnection(CONNECTION_URL);
-             PreparedStatement prepStat = conn.prepareStatement("INSERT into users (first_name,last_name, email, role, password) values (?, ?, ?,?, ?)")) {
 
-            prepStat.setString(1, user.getFirstName());
-            prepStat.setString(2, user.getLastName());
-            prepStat.setString(3, user.getEmail());
-            prepStat.setInt(4, user.getRole().getValue());
-            prepStat.setString(5, user.getPassword());
-            prepStat.execute();
 
-            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from users where email = ?")) {
-                prSt.setString(1, user.getEmail());
-                rs = prSt.executeQuery();
-                while (rs.next()) {
-                    user.setId(rs.getInt("id"));
-                }
-            }
 
-        }
-    }
 
-    public void insertMeeting(Meeting meeting) throws SQLException {
-        ResultSet rs;
-        try (Connection conn = getConnection(CONNECTION_URL);
-             PreparedStatement prepStat = conn.prepareStatement("INSERT into meetings (name, date, topic_id, language) values (?, ?, ?, ?)")) {
 
-            prepStat.setString(1, meeting.getName());
-            prepStat.setString(2, meeting.getDate());
-            prepStat.setObject(3, meeting.getTopics());
-            prepStat.setString(4, meeting.getLanguage().getValue());
-            prepStat.execute();
-
-            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from meetings where name = ?")) {
-                prSt.setString(1, meeting.getName());
-                rs = prSt.executeQuery();
-                while (rs.next()) {
-                    meeting.setId(rs.getInt("id"));
-                }
-            }
-        }
-    }
-
-    public void insertTopic(Topic topic) throws SQLException {
-        ResultSet rs;
-        try (Connection conn = getConnection(CONNECTION_URL);
-             PreparedStatement prepStat = conn.prepareStatement("INSERT into topic (name, date, description, language) values (?, ?, ?, ?)")) {
-
-            prepStat.setString(1, topic.getName());
-            prepStat.setString(2, topic.getDate());
-            prepStat.setString(3, topic.getDescription());
-            prepStat.setString(4, topic.getLanguage().getValue());
-            prepStat.execute();
-
-            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from topic where name = ?")) {
-                prSt.setString(1, topic.getName());
-                rs = prSt.executeQuery();
-                while (rs.next()) {
-                    topic.setId(rs.getInt("id"));
-                }
-            }
-        }
-    }
-
-    public void insertLocation(Location location) throws SQLException {
-        ResultSet rs;
-        try (Connection conn = getConnection(CONNECTION_URL);
-             PreparedStatement prepStat = conn.prepareStatement("INSERT into location (country, city, street, house, room, language) values (?, ?, ?, ?, ?,?)")) {
-
-            prepStat.setString(1, location.getCountry());
-            prepStat.setString(2, location.getCity());
-            prepStat.setString(3, location.getStreet());
-            prepStat.setString(4, location.getHouse());
-            prepStat.setString(5, location.getRoom());
-            prepStat.setString(6, location.getLanguage().getValue());
-            prepStat.execute();
-
-            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from location where country = ? AND city = ? AND street = ? AND house = ? AND room = ?")) {
-                prSt.setString(1, location.getCountry());
-                prSt.setString(2, location.getCity());
-                prSt.setString(3, location.getStreet());
-                prSt.setString(4, location.getHouse());
-                prSt.setString(5, location.getRoom());
-                rs = prSt.executeQuery();
-                while (rs.next()) {
-                    location.setId(rs.getInt("id"));
-                }
-            }
-        }
-    }
 
 
     //
-    protected String findMeetingDateByName(String name) {
-        String result = "";
-        ResultSet rs;
-
-        try (Connection conn = getConnection(CONNECTION_URL);
-             PreparedStatement prepStat = conn.prepareStatement("SELECT date FROM meetings WHERE name = ?")) {
-            ;
-            prepStat.setString(1, name);
-            rs = prepStat.executeQuery();
-            while (rs.next()) {
-                result = rs.getString("date");
-            }
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
+//    protected String findMeetingDateByName(String name) {
+//        String result = "";
+//        ResultSet rs;
+//
+//        try (Connection conn = getConnection(CONNECTION_URL);
+//             PreparedStatement prepStat = conn.prepareStatement("SELECT date FROM meetings WHERE name = ?")) {
+//            ;
+//            prepStat.setString(1, name);
+//            rs = prepStat.executeQuery();
+//            while (rs.next()) {
+//                result = rs.getString("date");
+//            }
+//            return result;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     //
 //    protected int getMeetingParticipantsCount(String name){
@@ -427,25 +344,5 @@ public class DBManager {
 //
 //    }
 //
-    public User getUser(String email, String password) throws SQLException {
-        ResultSet rs;
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
 
-        Connection conn = getConnection(CONNECTION_URL);
-        PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE email = ? AND password = ?");
-        prepStat.setString(1, email);
-        prepStat.setString(2, password);
-        rs = prepStat.executeQuery();
-        while (rs.next()) {
-            user.setId(rs.getInt("id"));
-            user.setEmail(rs.getString("email"));
-            user.setRole(Role.USER);
-            user.setPassword(rs.getString("password"));
-            user.setFirstName(rs.getString("first_name"));
-            user.setLastName(rs.getString("last_name"));
-        }
-        return user;
-    }
 }

@@ -1,5 +1,8 @@
 package com.epam.rd.fp.servlets;
 
+import com.epam.rd.fp.dao.LocationDao;
+import com.epam.rd.fp.dao.MeetingDao;
+import com.epam.rd.fp.dao.MeetingLocationDao;
 import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.enums.Language;
@@ -21,21 +24,23 @@ public class CreateMeetingServlet extends HttpServlet {
         String date = request.getParameter("date");
         String location_id = request.getParameter("location_id");
         Language language;
-        if ("EN".equals(request.getParameter("language"))){
+        if ("EN".equalsIgnoreCase(request.getParameter("language"))){
             language = Language.EN;
         }else{
             language = Language.RU;
         }
-        DBManager dbManager = DBManager.getInstance();
+        LocationDao locationDao = new LocationDao();
+        MeetingDao meetingDao = new MeetingDao();
+        MeetingLocationDao meetingLocationDao = new MeetingLocationDao();
         Meeting meeting = new Meeting();
         meeting.setName(name);
         meeting.setDate(date);
         meeting.setLanguage(language);
-        try {
-            dbManager.insertMeeting(meeting);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
-   }
+        meeting.setLocation(locationDao.getLocation(Integer.parseInt(location_id)));
+        meetingDao.insertMeeting(meeting);
+        meetingLocationDao.bindLocationIdWithMeetingId(Integer.parseInt(location_id), meeting.getId());
+        request.setAttribute("meeting_id", meeting.getId());
+        request.getRequestDispatcher("createTopicPage.jsp").forward(request, response);
+
+    }
 }

@@ -1,5 +1,6 @@
 package com.epam.rd.fp.servlets;
 
+import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.service.DBManager;
 
@@ -15,16 +16,12 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String email = request.getParameter("email");
     String password = request.getParameter("password");
-        DBManager dbManager = DBManager.getInstance();
-        try {
-            User user = dbManager.getUser(email, password);
-            request.setAttribute("firstName", user.getFirstName());
-            request.setAttribute("lastName", user.getLastName());
-            request.setAttribute("role", user.getRole());
-            RegistrationServlet.checkRoleAndForward(request, response, user);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        UserDao userDao = new UserDao();
+        User user = userDao.getUser(email, password);
+        request.setAttribute("firstName", user.getFirstName());
+        request.setAttribute("lastName", user.getLastName());
+        request.setAttribute("role", user.getRole());
+        RegistrationServlet.checkRoleAndForward(request, response, user);
     }
 
     @Override
