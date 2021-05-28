@@ -13,8 +13,8 @@
         <servlet-name>mainPage</servlet-name>
         <url-pattern>/meetings</url-pattern>
     </servlet-mapping>
-    
-    <listener>
-        <listener-class>com.epam.rd.fp.service.LiquibaseInitializer</listener-class>
-    </listener>
+<!--    -->
+<!--    <listener>-->
+<!--        <listener-class>com.epam.rd.fp.service.LiquibaseInitializer</listener-class>-->
+<!--    </listener>-->
 </web-app>

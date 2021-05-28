@@ -1,6 +1,10 @@
 package com.epam.rd.fp.service;
 
+import com.epam.rd.fp.model.Location;
+import com.epam.rd.fp.model.Meeting;
+import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.User;
+import com.epam.rd.fp.model.enums.Role;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +21,7 @@ public class DBManager {
 
     private DBManager() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -27,115 +31,130 @@ public class DBManager {
         return dbManager;
     }
 
-    Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(CONNECTION_URL);
+    public Connection getConnection(String conn) throws SQLException {
+        return DriverManager.getConnection(conn);
     }
-//
-//    protected void insertUser(User user) throws SQLException {
-//        try {
-//            Properties prop = new Properties();
-//
-//            try (InputStream inputStream = new FileInputStream(APP_SETTINGS)) {
-//                prop.load(inputStream);
-//            }
-//            String url = prop.getProperty(CONNECTION_URL);
-//
-//            ResultSet rs;
-//            try (Connection conn = getConnection(url);
-//                 PreparedStatement prepStat = conn.prepareStatement("INSERT into users (login, email, role, password) values (?, ?, ?, ?)")) {
-//
-//                prepStat.setString(1, user.getLogin());
-//                prepStat.setString(2, user.getEmail());
-//                prepStat.setString(3, user.getRole());
-//                prepStat.setString(4, user.getPassword());
-//                prepStat.execute();
-//
-//                try(PreparedStatement prSt = conn.prepareStatement("SELECT  id from users where login = ?")){
-//                    prSt.setString(1, user.getLogin());
-//                    rs = prSt.executeQuery();
-//                    while(rs.next()){
-//                        user.setId(rs.getLong("id"));
-//                    }
-//                }
-//
-//            }
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
-//
-//    protected void insertMeeting(Meeting meeting) throws SQLException {
-//        try {
-//            Properties prop = new Properties();
-//
-//            try (InputStream inputStream = new FileInputStream(APP_SETTINGS)) {
-//                prop.load(inputStream);
-//            }
-//            String url = prop.getProperty(CONNECTION_URL);
-//
-//            ResultSet rs;
-//            try (Connection conn = getConnection(url);
-//                 PreparedStatement prepStat = conn.prepareStatement("INSERT into meetings (name, participants_count, registered_count, date) values (?, ?, ?, ?)")) {
-//
-//                prepStat.setString(1, meeting.getName());
-//                prepStat.setInt(2, meeting.getParticipantsCount());
-//                prepStat.setInt(3, meeting.getRegisteredCount());
-//                prepStat.setString(4, meeting.getDate());
-//                prepStat.execute();
-//
-//                try(PreparedStatement prSt = conn.prepareStatement("SELECT  id from meetings where name = ?")){
-//                    prSt.setString(1, meeting.getName());
-//                    rs = prSt.executeQuery();
-//                    while(rs.next()){
-//                        meeting.setId(rs.getLong("id"));
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
-//
-//    protected String findMeetingDateByName(String name){
-//        try {
-//            Properties prop = new Properties();
-//
-//            try (InputStream inputStream = new FileInputStream(APP_SETTINGS)) {
-//                prop.load(inputStream);
-//            }
-//            String url = prop.getProperty(CONNECTION_URL);
-//
-//            String result = "";
-//            ResultSet rs;
-//
-//            Connection conn = getConnection(url);
-//            PreparedStatement prepStat = conn.prepareStatement("SELECT date FROM meetings WHERE name = ?");
-//            prepStat.setString(1, name);
-//            rs = prepStat.executeQuery();
-//            while (rs.next()) {
-//                result = rs.getString("date");
-//            }
-//            return result;
-//
-//        } catch (SQLException | IOException e) {
-//            e.printStackTrace();
-//        }
-//        return "";
-//    }
-//
+
+    public void insertUser(User user) throws SQLException {
+        ResultSet rs;
+        try (Connection conn = getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement("INSERT into users (first_name,last_name, email, role, password) values (?, ?, ?,?, ?)")) {
+
+            prepStat.setString(1, user.getFirstName());
+            prepStat.setString(2, user.getLastName());
+            prepStat.setString(3, user.getEmail());
+            prepStat.setInt(4, user.getRole().getValue());
+            prepStat.setString(5, user.getPassword());
+            prepStat.execute();
+
+            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from users where email = ?")) {
+                prSt.setString(1, user.getEmail());
+                rs = prSt.executeQuery();
+                while (rs.next()) {
+                    user.setId(rs.getInt("id"));
+                }
+            }
+
+        }
+    }
+
+    public void insertMeeting(Meeting meeting) throws SQLException {
+        ResultSet rs;
+        try (Connection conn = getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement("INSERT into meetings (name, date, topic_id, language) values (?, ?, ?, ?)")) {
+
+            prepStat.setString(1, meeting.getName());
+            prepStat.setString(2, meeting.getDate());
+            prepStat.setObject(3, meeting.getTopics());
+            prepStat.setString(4, meeting.getLanguage().getValue());
+            prepStat.execute();
+
+            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from meetings where name = ?")) {
+                prSt.setString(1, meeting.getName());
+                rs = prSt.executeQuery();
+                while (rs.next()) {
+                    meeting.setId(rs.getInt("id"));
+                }
+            }
+        }
+    }
+
+    public void insertTopic(Topic topic) throws SQLException {
+        ResultSet rs;
+        try (Connection conn = getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement("INSERT into topic (name, date, description, language) values (?, ?, ?, ?)")) {
+
+            prepStat.setString(1, topic.getName());
+            prepStat.setString(2, topic.getDate());
+            prepStat.setString(3, topic.getDescription());
+            prepStat.setString(4, topic.getLanguage().getValue());
+            prepStat.execute();
+
+            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from topic where name = ?")) {
+                prSt.setString(1, topic.getName());
+                rs = prSt.executeQuery();
+                while (rs.next()) {
+                    topic.setId(rs.getInt("id"));
+                }
+            }
+        }
+    }
+
+    public void insertLocation(Location location) throws SQLException {
+        ResultSet rs;
+        try (Connection conn = getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement("INSERT into location (country, city, street, house, room, language) values (?, ?, ?, ?, ?,?)")) {
+
+            prepStat.setString(1, location.getCountry());
+            prepStat.setString(2, location.getCity());
+            prepStat.setString(3, location.getStreet());
+            prepStat.setString(4, location.getHouse());
+            prepStat.setString(5, location.getRoom());
+            prepStat.setString(6, location.getLanguage().getValue());
+            prepStat.execute();
+
+            try (PreparedStatement prSt = conn.prepareStatement("SELECT  id from location where country = ? AND city = ? AND street = ? AND house = ? AND room = ?")) {
+                prSt.setString(1, location.getCountry());
+                prSt.setString(2, location.getCity());
+                prSt.setString(3, location.getStreet());
+                prSt.setString(4, location.getHouse());
+                prSt.setString(5, location.getRoom());
+                rs = prSt.executeQuery();
+                while (rs.next()) {
+                    location.setId(rs.getInt("id"));
+                }
+            }
+        }
+    }
+
+
+    //
+    protected String findMeetingDateByName(String name) {
+        String result = "";
+        ResultSet rs;
+
+        try (Connection conn = getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement("SELECT date FROM meetings WHERE name = ?")) {
+            ;
+            prepStat.setString(1, name);
+            rs = prepStat.executeQuery();
+            while (rs.next()) {
+                result = rs.getString("date");
+            }
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    //
 //    protected int getMeetingParticipantsCount(String name){
 //        try {
-//            Properties prop = new Properties();
-//
-//            try (InputStream inputStream = new FileInputStream(APP_SETTINGS)) {
-//                prop.load(inputStream);
-//            }
-//            String url = prop.getProperty(CONNECTION_URL);
-//
 //            int result = 0;
 //            ResultSet rs;
 //
-//            Connection conn = getConnection(url);
+//            Connection conn = getConnection(CONNECTION_URL);
 //            PreparedStatement prepStat = conn.prepareStatement("SELECT participants_count FROM meetings WHERE name = ?");
 //            prepStat.setString(1, name);
 //            rs = prepStat.executeQuery();
@@ -144,7 +163,7 @@ public class DBManager {
 //            }
 //            return result;
 //
-//        } catch (SQLException | IOException e) {
+//        } catch (SQLException e) {
 //            e.printStackTrace();
 //        }
 //        return 0;
@@ -408,34 +427,25 @@ public class DBManager {
 //
 //    }
 //
-//    public User getUser(String login) {
-//        try {
-//            Properties prop = new Properties();
-//
-//            try (InputStream inputStream = new FileInputStream(APP_SETTINGS)) {
-//                prop.load(inputStream);
-//            }
-//            String url = prop.getProperty(CONNECTION_URL);
-//
-//            ResultSet rs;
-//            User user = new User();
-//            user.setLogin(login);
-//
-//            Connection conn = getConnection(url);
-//            PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE login = ?");
-//            prepStat.setString(1, login);
-//            rs = prepStat.executeQuery();
-//            while (rs.next()) {
-//                user.setId(rs.getLong("id"));
-//                user.setEmail(rs.getString("email"));
-//                user.setRole(rs.getString("role"));
-//                user.setPassword(rs.getString("password"));
-//            }
-//            return user;
-//
-//        } catch (SQLException | IOException e) {
-//            e.printStackTrace();
-//        }
-//        return new User();
-//    }
+    public User getUser(String email, String password) throws SQLException {
+        ResultSet rs;
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
+        Connection conn = getConnection(CONNECTION_URL);
+        PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE email = ? AND password = ?");
+        prepStat.setString(1, email);
+        prepStat.setString(2, password);
+        rs = prepStat.executeQuery();
+        while (rs.next()) {
+            user.setId(rs.getInt("id"));
+            user.setEmail(rs.getString("email"));
+            user.setRole(Role.USER);
+            user.setPassword(rs.getString("password"));
+            user.setFirstName(rs.getString("first_name"));
+            user.setLastName(rs.getString("last_name"));
+        }
+        return user;
+    }
 }

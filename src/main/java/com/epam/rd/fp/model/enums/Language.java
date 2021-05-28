@@ -1,6 +1,15 @@
 package com.epam.rd.fp.model.enums;
 
 public enum Language {
-    RU,
-    EN;
+    RU ("ru"),
+    EN("en");
+    private String value;
+
+    Language(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

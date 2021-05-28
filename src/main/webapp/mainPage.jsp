@@ -1,25 +1,24 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
+<%--
+  Created by IntelliJ IDEA.
+  User: vasyl
+  Date: 26.05.2021
+  Time: 15:59
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Meetings</title>
 </head>
 <body>
-<form>
-    <p><strong>Login:</strong>
-        <label>
-            <input maxlength="25" size="40" name="login">
-        </label></p>
-    <p><strong>Password:</strong>
-        <label>
-            <input type="password" maxlength="25" size="40" name="password">
-        </label></p>
-
-    <p><input type="button" value="Log in" onclick="function logIn() {
-        <%%>
-            }
-            logIn()"></p>
-    <p><input type="button" value="Register" onclick="registrate()"></p>
-</form>
+<%
+if (request.getParameter("firstName") == null && request.getParameter("lastName") == null){
+    out.println("Welcome, " + request.getAttribute("firstName") + " " + request.getAttribute("lastName"));
+}else{
+out.println("Welcome," + request.getParameter("firstName") + " " + request.getParameter("lastName"));
+}
+%>
+<hr>
+<a href="registrationForAMeeting.jsp">Registration for a meeting</a>
 </body>
 </html>
