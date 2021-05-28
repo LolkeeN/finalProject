@@ -20,7 +20,7 @@ import java.util.List;
 public class CreateMeetingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getParameter("name");
+        String name = request.getParameter("meeting_name");
         String date = request.getParameter("date");
         String location_id = request.getParameter("location_id");
         Language language;

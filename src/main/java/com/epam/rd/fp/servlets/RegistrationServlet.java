@@ -4,6 +4,8 @@ import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Role;
 import com.epam.rd.fp.service.DBManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -13,7 +15,7 @@ import javax.servlet.annotation.*;
 
 @WebServlet(name = "registrationServlet", value = "/registration")
 public class RegistrationServlet extends HttpServlet {
-
+    private static final Logger log = LogManager.getLogger(RegistrationServlet.class);
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
       String email = request.getParameter("email");
       String password = request.getParameter("password");
@@ -29,8 +31,12 @@ public class RegistrationServlet extends HttpServlet {
           case "speaker":
               role = Role.SPEAKER;
               break;
-          default:
+          case "SPECIALKEYFORADMINROLE":
               role = Role.MODERATOR;
+
+          default:
+              log.info("Role haven't been chosen");
+              throw new IllegalArgumentException("You've't chosen a role");
       }
         User user = new User(firstName, lastName, password, email, role);
         UserDao userDao = new UserDao();

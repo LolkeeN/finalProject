@@ -3,10 +3,13 @@ package com.epam.rd.fp.servlets;
 import com.epam.rd.fp.dao.MeetingDao;
 import com.epam.rd.fp.dao.MeetingTopicDao;
 import com.epam.rd.fp.dao.TopicDao;
+import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.service.DBManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -18,6 +21,7 @@ import java.util.List;
 
 @WebServlet(name = "CreateTopicServlet", value = "/createTopic")
 public class CreateTopicServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(CreateTopicServlet.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         TopicDao topicDao = new TopicDao();
@@ -41,7 +45,9 @@ public class CreateTopicServlet extends HttpServlet {
         topic.setLanguage(language);
         topicDao.insertTopic(topic);
 
-        Meeting meeting = meetingDao.getMeeting((String) request.getAttribute("meeting_name"));
+        Meeting meeting = meetingDao.getMeeting(request.getParameter("meeting_name"));
+        System.out.println("meeting name " + meeting.getName());
+        System.out.println("meeting id " + meeting.getId());
         List<Topic> topics = new ArrayList<>();
         topics.add(topic);
         meeting.setTopics(topics);
