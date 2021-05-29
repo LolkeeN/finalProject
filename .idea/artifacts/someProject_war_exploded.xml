@@ -52,6 +52,7 @@
           <element id="library" level="project" name="Maven: org.apache.maven.wagon:wagon-provider-api:2.10" />
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-core:2.14.1" />
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-api:2.14.1" />
+          <element id="library" level="project" name="Maven: jstl:jstl:1.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">

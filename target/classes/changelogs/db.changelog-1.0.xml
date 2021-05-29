@@ -68,6 +68,9 @@
             <column name="language" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="available" type="varchar(5)" defaultValue="true">
+                <constraints nullable="false" />
+            </column>
             <column name="description" type="varchar(500)">
                 <constraints nullable="false"/>
             </column>
@@ -126,11 +129,11 @@
 
     <changeSet id="create_topic_speaker_table" author="Vasyl Veselov">
         <createTable tableName="topic_speaker">
-            <column name="fk_topic_id" type="INT">
+            <column name="topic_id" type="INT">
                 <constraints foreignKeyName="foreign_key_topic_id" nullable="false" references="topic(id)"/>
             </column>
             <column name="speaker_id" type="INT">
-                <constraints foreignKeyName="speaker_id" nullable="false" references="users(id)"/>
+                <constraints foreignKeyName="fk_user_id" nullable="false" references="users(id)"/>
             </column>
         </createTable>
     </changeSet>
@@ -139,11 +142,11 @@
 
     <changeSet author="Vasyl Veselov" id="fill_users_table">
         <insert tableName="users">
-            <column name="email" value="email@gmail.com"/>
-            <column name="password" value="parol"/>
-            <column name="role" value="1"/>
-            <column name="first_name" value="Denys"/>
-            <column name="last_name" value="Petrov"/>
+            <column name="email" value="bazelik777@gmail.com"/>
+            <column name="password" value="123"/>
+            <column name="role" value="2"/>
+            <column name="first_name" value="Василий"/>
+            <column name="last_name" value="Веселов"/>
         </insert>
     </changeSet>
 

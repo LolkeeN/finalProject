@@ -46,8 +46,6 @@ public class CreateTopicServlet extends HttpServlet {
         topicDao.insertTopic(topic);
 
         Meeting meeting = meetingDao.getMeeting(request.getParameter("meeting_name"));
-        System.out.println("meeting name " + meeting.getName());
-        System.out.println("meeting id " + meeting.getId());
         List<Topic> topics = new ArrayList<>();
         topics.add(topic);
         meeting.setTopics(topics);

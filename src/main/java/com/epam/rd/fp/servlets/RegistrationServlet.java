@@ -3,12 +3,10 @@ package com.epam.rd.fp.servlets;
 import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Role;
-import com.epam.rd.fp.service.DBManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -31,26 +29,33 @@ public class RegistrationServlet extends HttpServlet {
           case "speaker":
               role = Role.SPEAKER;
               break;
-          case "SPECIALKEYFORADMINROLE":
+          case "specialkeyforadminrole":
               role = Role.MODERATOR;
-
-          default:
-              log.info("Role haven't been chosen");
+              break;
+          case "":
+              log.info("Role hasn't been chosen");
               throw new IllegalArgumentException("You've't chosen a role");
+          default:
+              throw new IllegalStateException("Unexpected value: " + roleValue);
       }
         User user = new User(firstName, lastName, password, email, role);
         UserDao userDao = new UserDao();
         userDao.insertUser(user);
-        checkRoleAndForward(request, response, user);
+        request.getSession().setAttribute("first_name", user.getFirstName());
+        request.getSession().setAttribute("last_name", user.getLastName());
+        request.getSession().setAttribute("id", user.getId());
+        request.getSession().setAttribute("email", user.getEmail());
+        checkRoleAndRedirect(request, response, user);
     }
 
-    static void checkRoleAndForward(HttpServletRequest request, HttpServletResponse response, User user) throws ServletException, IOException {
+    static void checkRoleAndRedirect(HttpServletRequest request, HttpServletResponse response, User user) throws ServletException, IOException {
         if (user.getRole().getValue() == 1) {
             request.getRequestDispatcher("mainPage.jsp").forward(request, response);
         }else if (user.getRole().getValue() == 2){
-            request.getRequestDispatcher("adminPage.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
         }else if (user.getRole().getValue() == 3){
             request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
+
         }
     }
 

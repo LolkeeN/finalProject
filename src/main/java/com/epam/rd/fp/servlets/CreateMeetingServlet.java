@@ -39,7 +39,7 @@ public class CreateMeetingServlet extends HttpServlet {
         meeting.setLocation(locationDao.getLocation(Integer.parseInt(location_id)));
         meetingDao.insertMeeting(meeting);
         meetingLocationDao.bindLocationIdWithMeetingId(Integer.parseInt(location_id), meeting.getId());
-        request.setAttribute("meeting_id", meeting.getId());
+        request.setAttribute("meeting_name", meeting.getName());
         request.getRequestDispatcher("createTopicPage.jsp").forward(request, response);
 
     }

@@ -11,15 +11,15 @@
     <title>Speaker Page</title>
 </head>
 <body>
-<%if (request.getParameter("firstName") == null && request.getParameter("lastName") == null){
-out.println("Welcome, speaker " + request.getAttribute("firstName") + " " + request.getAttribute("lastName"));
-}else{
-out.println("Welcome, speaker " + request.getParameter("firstName") + " " + request.getParameter("lastName"));
-}%>
+<%="Speaker page"%>
 <hr>
-<a href="speakerMeetings.jsp">My meetings</a>
+<form action="speakerMeetings" method="get">
+    <input type="submit" value="get your meetings"/>
+</form>
 <hr>
-<a href="chooseFreeTopic.jsp">Choose free topic</a>
+<form action="getFreeTopics" method="get">
+    <input type="submit" value="show free meetings"/>
+</form>
 <hr>
 <a href="suggestTopic.jsp">Suggest my topic</a>
 <hr>

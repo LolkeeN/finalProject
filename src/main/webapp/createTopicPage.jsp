@@ -16,6 +16,7 @@
     <b>Date -> </b><input name="date"/><br/>
     <b>language -> </b><input name="language"/><br/>
     <b>description -> </b><input name="description"/><br/>
+    <b>meeting name -> </b><input name="meeting_name"/><br/>
     <input type="submit" value="Create topic"/>
 </form>
 </body>
