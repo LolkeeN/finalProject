@@ -19,5 +19,8 @@
     <b>meeting name -> </b><input name="meeting_name"/><br/>
     <input type="submit" value="Create topic"/>
 </form>
+<form action="getSuggestedTopics" method="get">
+    <input type="submit" value="get from suggested topics"/>
+</form>
 </body>
 </html>

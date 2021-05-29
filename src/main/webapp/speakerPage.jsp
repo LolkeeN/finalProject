@@ -21,7 +21,9 @@
     <input type="submit" value="show free meetings"/>
 </form>
 <hr>
-<a href="suggestTopic.jsp">Suggest my topic</a>
+<form action="suggestATopic.jsp" method="get">
+    <input type="submit" value="suggest a topic"/>
+</form>
 <hr>
 </body>
 </html>

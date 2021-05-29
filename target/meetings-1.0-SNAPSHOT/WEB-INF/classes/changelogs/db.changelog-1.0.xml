@@ -173,9 +173,9 @@
 
     <changeSet author="Vasyl Veselov" id="fill_meeting_table">
         <insert tableName="meeting">
-            <column name="name" value="gagagag"/>
-            <column name="date" value="01.06.2021"/>
-            <column name="language" value="EN"/>
+            <column name="name" value="suggested_topics"/>
+            <column name="date" value=""/>
+            <column name="language" value=""/>
         </insert>
 
 
