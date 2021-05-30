@@ -45,6 +45,7 @@ public class RegistrationServlet extends HttpServlet {
         request.getSession().setAttribute("last_name", user.getLastName());
         request.getSession().setAttribute("id", user.getId());
         request.getSession().setAttribute("email", user.getEmail());
+        request.getSession().setAttribute("role", user.getRole().getValue());
         checkRoleAndRedirect(request, response, user);
     }
 
@@ -57,8 +58,5 @@ public class RegistrationServlet extends HttpServlet {
             request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
 
         }
-    }
-
-    public void destroy() {
     }
 }

@@ -18,7 +18,7 @@
 </form>
 <hr>
 <form action="getFreeTopics" method="get">
-    <input type="submit" value="show free meetings"/>
+    <input type="submit" value="show free topics"/>
 </form>
 <hr>
 <form action="suggestATopic.jsp" method="get">

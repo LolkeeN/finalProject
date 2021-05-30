@@ -11,6 +11,17 @@ public class Location {
     private String room;
     private Language language;
 
+    @Override
+    public String toString() {
+        return "Location{" +
+                "country='" + country + '\'' +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", house='" + house + '\'' +
+                ", room='" + room + '\'' +
+                '}';
+    }
+
     public int getId() {
         return id;
     }

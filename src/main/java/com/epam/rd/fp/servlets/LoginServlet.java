@@ -18,7 +18,7 @@ public class LoginServlet extends HttpServlet {
         User user = userDao.getUser(email, password);
         request.getSession().setAttribute("firstName", user.getFirstName());
         request.getSession().setAttribute("lastName", user.getLastName());
-        request.getSession().setAttribute("role", user.getRole());
+        request.getSession().setAttribute("role", user.getRole().getValue());
         request.getSession().setAttribute("email", user.getEmail());
         request.getSession().setAttribute("password", user.getPassword());
         request.getSession().setAttribute("id", user.getId());

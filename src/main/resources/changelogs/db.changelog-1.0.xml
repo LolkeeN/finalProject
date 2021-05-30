@@ -138,6 +138,17 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="create_participants_table" author="Vasyl Veselov">
+        <createTable tableName="meeting_participants">
+            <column name="user_id" type="INT">
+                <constraints foreignKeyName="participant_id" nullable="false" references="users(id)"/>
+            </column>
+            <column name="meeting_id" type="INT">
+                <constraints foreignKeyName="forei_key_meeting_id" nullable="false" references="meeting(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 
 
     <changeSet author="Vasyl Veselov" id="fill_users_table">

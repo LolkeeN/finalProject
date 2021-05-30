@@ -1,11 +1,14 @@
 package com.epam.rd.fp.servlets;
 
 import com.epam.rd.fp.dao.LocationDao;
+import com.epam.rd.fp.dao.MeetingLocationDao;
 import com.epam.rd.fp.dao.TopicDao;
 import com.epam.rd.fp.model.Location;
 import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.service.DBManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -15,8 +18,11 @@ import java.sql.SQLException;
 
 @WebServlet(name = "CreateLocationServlet", value = "/createLocation")
 public class CreateLocationServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(CreateLocationServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean exceptionCaught = false;
         LocationDao locationDao = new LocationDao();
         String country = request.getParameter("country");
         String city = request.getParameter("city");
@@ -36,8 +42,17 @@ public class CreateLocationServlet extends HttpServlet {
         location.setRoom(room);
         location.setStreet(street);
         location.setLanguage(language);
-        locationDao.insertLocation(location);
-        response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
+        try {
+            locationDao.insertLocation(location);
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
+        }
     }
 }
 

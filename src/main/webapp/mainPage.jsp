@@ -13,12 +13,14 @@
 <body>
 <%
 if (request.getParameter("firstName") == null && request.getParameter("lastName") == null){
-    out.println("Welcome, " + request.getAttribute("firstName") + " " + request.getAttribute("lastName"));
+    out.println("Welcome, " + request.getSession().getAttribute("firstName") + " " + request.getSession().getAttribute("lastName"));
 }else{
 out.println("Welcome," + request.getParameter("firstName") + " " + request.getParameter("lastName"));
 }
 %>
 <hr>
-<a href="registrationForAMeeting.jsp">Registration for a meeting</a>
+<form action="getAllMeetings" method="get">
+    <input type="submit" value="Show all meetings"/>
+</form>
 </body>
 </html>
