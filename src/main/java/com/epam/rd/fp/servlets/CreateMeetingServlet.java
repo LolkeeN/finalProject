@@ -7,6 +7,8 @@ import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.service.DBManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -18,8 +20,11 @@ import java.util.List;
 
 @WebServlet(name = "CreateMeetingServlet", value = "/createMeeting")
 public class CreateMeetingServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(CreateMeetingServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean exceptionCaught = false;
         String name = request.getParameter("meeting_name");
         String date = request.getParameter("date");
         String location_id = request.getParameter("location_id");
@@ -29,18 +34,28 @@ public class CreateMeetingServlet extends HttpServlet {
         }else{
             language = Language.RU;
         }
+
         LocationDao locationDao = new LocationDao();
         MeetingDao meetingDao = new MeetingDao();
         MeetingLocationDao meetingLocationDao = new MeetingLocationDao();
+
         Meeting meeting = new Meeting();
         meeting.setName(name);
         meeting.setDate(date);
         meeting.setLanguage(language);
-        meeting.setLocation(locationDao.getLocation(Integer.parseInt(location_id)));
-        meetingDao.insertMeeting(meeting);
-        meetingLocationDao.bindLocationIdWithMeetingId(Integer.parseInt(location_id), meeting.getId());
-        request.setAttribute("meeting_name", meeting.getName());
-        request.getRequestDispatcher("createTopicPage.jsp").forward(request, response);
-
+        try {
+            meeting.setLocation(locationDao.getLocation(Integer.parseInt(location_id)));
+            meetingDao.insertMeeting(meeting);
+            meetingLocationDao.bindLocationIdWithMeetingId(Integer.parseInt(location_id), meeting.getId());
+            request.setAttribute("meeting_name", meeting.getName());
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            request.getRequestDispatcher("createTopicPage.jsp").forward(request, response);
+        }
     }
 }

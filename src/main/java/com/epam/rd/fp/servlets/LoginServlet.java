@@ -2,6 +2,8 @@ package com.epam.rd.fp.servlets;
 
 import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -10,6 +12,8 @@ import java.io.IOException;
 
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(LoginServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String email = request.getParameter("email");
