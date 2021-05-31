@@ -1,18 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     if (request.getParameter("submit1") != null) {
+        try{
         if ((int)request.getSession().getAttribute("role") == 1){
 %>
 <jsp:forward page="mainPage.jsp"></jsp:forward>
 <% }else if ((int)request.getSession().getAttribute("role") == 3){
             %>
 <jsp:forward page="speakerPage.jsp"></jsp:forward>
-<% }else{
+<% }else if ((int)request.getSession().getAttribute("role") == 2){
 %>
 <jsp:forward page="adminPage.jsp"></jsp:forward>
 <%
         return;
     }
+    }catch (NullPointerException e){
+            request.getRequestDispatcher("loginPage.jsp").forward(request, response);
+        }
     }
 %>
 <html>

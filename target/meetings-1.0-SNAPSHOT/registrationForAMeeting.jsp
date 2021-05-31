@@ -18,5 +18,9 @@
     <b>Choose meeting id for registration -> </b><input name="meeting_id"/><br/>
     <input type="submit" value="Registration"/>
 </form>
+<form action="meetingParticipation" method="get">
+    <b>Choose meeting id to take part -> </b><input name="meeting_id"/><br/>
+    <input type="submit" value="Take part!"/>
+</form>
 </body>
 </html>

@@ -22,9 +22,11 @@ import java.util.List;
 @WebServlet(name = "CreateTopicServlet", value = "/createTopic")
 public class CreateTopicServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(CreateTopicServlet.class);
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean exceptionCaught = false;
         TopicDao topicDao = new TopicDao();
         MeetingDao meetingDao = new MeetingDao();
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
@@ -44,15 +46,24 @@ public class CreateTopicServlet extends HttpServlet {
         topic.setDate(date);
         topic.setDescription(description);
         topic.setLanguage(language);
-        topicDao.insertTopic(topic);
+        try {
+            topicDao.insertTopic(CONNECTION_URL, topic);
 
 
-        Meeting meeting = meetingDao.getMeeting(request.getParameter("meeting_name"));
-        List<Topic> topics = new ArrayList<>();
-        topics.add(topic);
-        meeting.setTopics(topics);
-        meetingTopicDao.bindTopicIdWithMeetingId(topic.getId(), meeting.getId());
-        response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
+            Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, request.getParameter("meeting_name"));
+            List<Topic> topics = new ArrayList<>();
+            topics.add(topic);
+            meeting.setTopics(topics);
+            meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topic.getId(), meeting.getId());
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
+        }
     }
 
 }

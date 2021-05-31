@@ -18,6 +18,7 @@ import java.util.List;
 
 @WebServlet(name = "CreateSuggestedTopicServlet", value = "/createSuggestedTopic")
 public class CreateSuggestedTopicServlet extends HttpServlet {
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final Logger log = LogManager.getLogger(CreateSuggestedTopicServlet.class);
 
     @Override
@@ -56,14 +57,14 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
         topic.setDate(date);
         topic.setDescription(description);
         topic.setLanguage(language);
-        topicDao.insertTopic(topic);
-        topicDao.updateTopicAvailability(topic, false);
+        topicDao.insertTopic(CONNECTION_URL, topic);
+        topicDao.updateTopicAvailability(CONNECTION_URL, topic, false);
 
 
-        Meeting meeting = meetingDao.getMeeting(request.getParameter("meeting_name"));
+        Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, request.getParameter("meeting_name"));
         List<Topic> topics = new ArrayList<>();
         topics.add(topic);
         meeting.setTopics(topics);
-        meetingTopicDao.bindTopicIdWithMeetingId(topic.getId(), meeting.getId());
+        meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topic.getId(), meeting.getId());
     }
 }

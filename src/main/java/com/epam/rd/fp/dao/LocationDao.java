@@ -16,19 +16,18 @@ import static java.sql.DriverManager.getConnection;
 
 public class LocationDao {
     private static final Logger log = LogManager.getLogger(LocationDao.class);
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final String INSERT_LOCATION_INTO_LOCATION_TABLE = "INSERT into location (country, city, street, house, room, language) values (?, ?, ?, ?, ?,?)";
     private static final String GET_LOCATION_ID_BY_ITS_DATA = "SELECT  id from location where country = ? AND city = ? AND street = ? AND house = ? AND room = ?";
     private static final String GET_LOCATION_DATA_BY_ID = "SELECT * FROM location WHERE id = ?";
 
-    public void insertLocation(Location location) {
+    public void insertLocation(String connection, Location location) {
         ResultSet rs;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             log.error("No suitable driver found", e);
         }
-        try (Connection conn = getConnection(CONNECTION_URL);
+        try (Connection conn = getConnection(connection);
              PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)) {
 
             prepStat.setString(1, location.getCountry());
@@ -56,7 +55,7 @@ public class LocationDao {
         }
     }
 
-    public Location getLocation(int id) {
+    public Location getLocation(String connection, int id) {
         ResultSet rs;
         Location location = new Location();
         location.setId(id);
@@ -67,7 +66,7 @@ public class LocationDao {
             log.error("No suitable driver found", e);
         }
         try {
-            Connection conn = getConnection(CONNECTION_URL);
+            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID);
             prepStat.setInt(1, id);
             rs = prepStat.executeQuery();
@@ -85,6 +84,7 @@ public class LocationDao {
             }
         }catch (SQLException e){
             log.error("Cannot get location from location table", e);
+            throw new IllegalArgumentException("Cannot get location");
         }
         return location;
     }

@@ -16,13 +16,15 @@ import java.io.IOException;
 @WebServlet(name = "BindFreeTopicServlet", value = "/bindFreeTopic")
 public class BindFreeTopicServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(BindFreeTopicServlet.class);
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         boolean exceptionCaught = false;
         TopicDao topicDao = new TopicDao();
         UserDao userDao = new UserDao();
-        Topic topic = topicDao.getTopicById(Integer.parseInt(request.getParameter("topic_id")));
-        User user = userDao.getUser((Integer) request.getSession().getAttribute("id"));
+        Topic topic = topicDao.getTopicById(CONNECTION_URL, Integer.parseInt(request.getParameter("topic_id")));
+        User user = userDao.getUser(CONNECTION_URL, (Integer) request.getSession().getAttribute("id"));
         try {
             bindTopicToSpeaker(request, topic, user, log);
         }catch (IllegalArgumentException e){
@@ -30,7 +32,7 @@ public class BindFreeTopicServlet extends HttpServlet {
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
         }
-        topicDao.updateTopicAvailability(topic, false);
+        topicDao.updateTopicAvailability(CONNECTION_URL, topic, false);
         if (!exceptionCaught) {
             request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
         }
@@ -43,6 +45,6 @@ public class BindFreeTopicServlet extends HttpServlet {
             throw new IllegalArgumentException("Cannot set a topic to non-speaker");
         }
         TopicSpeakerDao topicSpeakerDao = new TopicSpeakerDao();
-        topicSpeakerDao.bindTopicWithSpeakerId(topic.getId(), user.getId());
+        topicSpeakerDao.bindTopicWithSpeakerId(CONNECTION_URL, topic.getId(), user.getId());
     }
 }

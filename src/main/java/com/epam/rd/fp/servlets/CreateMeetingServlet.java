@@ -20,6 +20,7 @@ import java.util.List;
 
 @WebServlet(name = "CreateMeetingServlet", value = "/createMeeting")
 public class CreateMeetingServlet extends HttpServlet {
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final Logger log = LogManager.getLogger(CreateMeetingServlet.class);
 
     @Override
@@ -44,9 +45,9 @@ public class CreateMeetingServlet extends HttpServlet {
         meeting.setDate(date);
         meeting.setLanguage(language);
         try {
-            meeting.setLocation(locationDao.getLocation(Integer.parseInt(location_id)));
-            meetingDao.insertMeeting(meeting);
-            meetingLocationDao.bindLocationIdWithMeetingId(Integer.parseInt(location_id), meeting.getId());
+            meeting.setLocation(locationDao.getLocation(CONNECTION_URL, Integer.parseInt(location_id)));
+            meetingDao.insertMeeting(CONNECTION_URL, meeting);
+            meetingLocationDao.bindLocationIdWithMeetingId(CONNECTION_URL, Integer.parseInt(location_id), meeting.getId());
             request.setAttribute("meeting_name", meeting.getName());
         }catch (IllegalArgumentException e){
             log.error(e.getMessage());

@@ -15,6 +15,7 @@ import java.io.IOException;
 
 @WebServlet(name = "BindSuggestedTopicWithMeetingServlet", value = "/bindSuggestedTopicWithMeeting")
 public class BindSuggestedTopicWithMeetingServlet extends HttpServlet {
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final Logger log = LogManager.getLogger(BindSuggestedTopicWithMeetingServlet.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -26,9 +27,9 @@ public class BindSuggestedTopicWithMeetingServlet extends HttpServlet {
         String meetingName = request.getParameter("meeting_name");
 
         try {
-            Meeting meeting = meetingDao.getMeeting(meetingName);
-            meetingTopicDao.bindTopicIdWithMeetingId(topicId, meeting.getId());
-            meetingTopicDao.deleteMeetingAndTopicConnectivityById(topicId, 1);
+            Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, meetingName);
+            meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topicId, meeting.getId());
+            meetingTopicDao.deleteMeetingAndTopicConnectivityById(CONNECTION_URL, topicId, 1);
         }catch (IllegalArgumentException e){
             log.error(e.getMessage());
             exceptionCaught = true;

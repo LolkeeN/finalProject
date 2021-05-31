@@ -26,5 +26,12 @@
 <hr>
 <a href="setTopicSpeaker.jsp"> Set topic's speaker </a>
 <hr>
+<a href="getAllMeetings"> Get all meetings </a>
+<hr>
+<a href="getFutureMeetings"> Get future meetings </a>
+<hr>
+<a href="getPastMeetings"> Get pst meetings </a>
+<hr>
+
 </body>
 </html>

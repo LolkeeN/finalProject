@@ -14,12 +14,23 @@ import java.util.List;
 @WebServlet(name = "GetFreeTopicsServlet", value = "/getFreeTopics")
 public class GetFreeTopicsServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(GetFreeTopicsServlet.class);
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean exceptionCaught = false;
         TopicDao topicDao = new TopicDao();
-        List<Topic> topics = topicDao.getFreeTopics();
-        request.setAttribute("freeTopics", topics);
-        request.getRequestDispatcher("chooseFreeTopic.jsp").forward(request, response);
+        try {
+            List<Topic> topics = topicDao.getFreeTopics(CONNECTION_URL);
+            request.setAttribute("freeTopics", topics);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            request.getRequestDispatcher("chooseFreeTopic.jsp").forward(request, response);
+        }
     }
 }

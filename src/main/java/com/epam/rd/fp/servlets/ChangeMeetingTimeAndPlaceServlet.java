@@ -14,6 +14,7 @@ import java.io.IOException;
 
 @WebServlet(name = "ChangeMeetingTimeAndPlaceServlet", value = "/changeMeetingTimeAndPlace")
 public class ChangeMeetingTimeAndPlaceServlet extends HttpServlet {
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final Logger log = LogManager.getLogger(ChangeMeetingTimeAndPlaceServlet.class);
 
     @Override
@@ -26,10 +27,10 @@ public class ChangeMeetingTimeAndPlaceServlet extends HttpServlet {
         String date = request.getParameter("date");
 
         try {
-            Meeting meeting = meetingDao.getMeeting(meetingName);
+            Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, meetingName);
             int locationId = Integer.parseInt(request.getParameter("location_id"));
-            meetingDao.setMeetingDate(meetingName, date);
-            meetingLocationDao.setMeetingLocation(meeting.getId(), locationId);
+            meetingDao.setMeetingDate(CONNECTION_URL, meetingName, date);
+            meetingLocationDao.setMeetingLocation(CONNECTION_URL, meeting.getId(), locationId);
         }catch (IllegalArgumentException e){
             log.error(e.getMessage(), e);
             exceptionCaught = true;

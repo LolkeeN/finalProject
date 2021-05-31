@@ -26,5 +26,7 @@
 <hr>
 <a href="setTopicSpeaker.jsp"> Set topic's speaker </a>
 <hr>
+<a href="getAllMeetings"> Get all meetings </a>
+<hr>
 </body>
 </html>

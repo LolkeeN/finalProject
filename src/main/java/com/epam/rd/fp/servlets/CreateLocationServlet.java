@@ -18,6 +18,7 @@ import java.sql.SQLException;
 
 @WebServlet(name = "CreateLocationServlet", value = "/createLocation")
 public class CreateLocationServlet extends HttpServlet {
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final Logger log = LogManager.getLogger(CreateLocationServlet.class);
 
     @Override
@@ -43,7 +44,7 @@ public class CreateLocationServlet extends HttpServlet {
         location.setStreet(street);
         location.setLanguage(language);
         try {
-            locationDao.insertLocation(location);
+            locationDao.insertLocation(CONNECTION_URL, location);
         }catch (IllegalArgumentException e){
             log.error(e.getMessage());
             exceptionCaught = true;

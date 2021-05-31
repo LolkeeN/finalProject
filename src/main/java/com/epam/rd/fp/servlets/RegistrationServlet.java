@@ -14,8 +14,11 @@ import javax.servlet.annotation.*;
 @WebServlet(name = "registrationServlet", value = "/registration")
 public class RegistrationServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(RegistrationServlet.class);
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-      String email = request.getParameter("email");
+      boolean exceptionCaught = false;
+        String email = request.getParameter("email");
       String password = request.getParameter("password");
       String firstName = request.getParameter("firstName");
       String lastName = request.getParameter("lastName");
@@ -40,13 +43,22 @@ public class RegistrationServlet extends HttpServlet {
       }
         User user = new User(firstName, lastName, password, email, role);
         UserDao userDao = new UserDao();
-        userDao.insertUser(user);
-        request.getSession().setAttribute("first_name", user.getFirstName());
-        request.getSession().setAttribute("last_name", user.getLastName());
-        request.getSession().setAttribute("id", user.getId());
-        request.getSession().setAttribute("email", user.getEmail());
-        request.getSession().setAttribute("role", user.getRole().getValue());
-        checkRoleAndRedirect(request, response, user);
+        try {
+            userDao.insertUser(CONNECTION_URL, user);
+            request.getSession().setAttribute("first_name", user.getFirstName());
+            request.getSession().setAttribute("last_name", user.getLastName());
+            request.getSession().setAttribute("id", user.getId());
+            request.getSession().setAttribute("email", user.getEmail());
+            request.getSession().setAttribute("role", user.getRole().getValue());
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            checkRoleAndRedirect(request, response, user);
+        }
     }
 
     static void checkRoleAndRedirect(HttpServletRequest request, HttpServletResponse response, User user) throws ServletException, IOException {

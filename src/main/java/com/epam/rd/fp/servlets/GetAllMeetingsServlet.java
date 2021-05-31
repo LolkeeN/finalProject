@@ -15,13 +15,29 @@ import java.util.List;
 @WebServlet(name = "GetAllMeetingsServlet", value = "/getAllMeetings")
 public class GetAllMeetingsServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(GetAllMeetingsServlet.class);
+    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean exceptionCaught = false;
         MeetingDao meetingDao = new MeetingDao();
+
         List<Meeting> meetings;
-        meetings = meetingDao.getAllMeetings();
-        request.setAttribute("meetings", meetings);
-        request.getRequestDispatcher("registrationForAMeeting.jsp").forward(request, response);
+        try {
+            meetings = meetingDao.getAllMeetings(CONNECTION_URL);
+            request.setAttribute("meetings", meetings);
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            if ((int)request.getSession().getAttribute("role") == 1) {
+                request.getRequestDispatcher("registrationForAMeeting.jsp").forward(request, response);
+            }else{
+                request.getRequestDispatcher("allMeetingsPage.jsp").forward(request, response);
+            }
+        }
     }
 }

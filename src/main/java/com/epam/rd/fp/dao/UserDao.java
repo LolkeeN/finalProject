@@ -15,19 +15,18 @@ import static java.sql.DriverManager.getConnection;
 
 public class UserDao {
     private static final Logger log = LogManager.getLogger(UserDao.class);
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final String SELECT_ALL_FROM_USER_TABLE = "SELECT * FROM users WHERE email = ? AND password = ?";
     private static final String INSERT_VALUES_INTO_USER_TABLE = "INSERT into users (first_name,last_name, email, role, password) values (?, ?, ?,?, ?)";
     private static final String SELECT_USER_ID_BY_EMAIL = "SELECT  id from users where email = ?";
 
-    public void insertUser(User user) {
+    public void insertUser(String connection, User user) {
         ResultSet rs;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             log.error("No suitable driver found", e);
         }
-        try (Connection conn = getConnection(CONNECTION_URL);
+        try (Connection conn = getConnection(connection);
              PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
 
             prepStat.setString(1, user.getFirstName());
@@ -47,10 +46,11 @@ public class UserDao {
 
         } catch (SQLException e) {
             log.error("Cannot insert user into user table", e);
+            throw new IllegalArgumentException("Cannot insert user");
         }
     }
 
-    public User getUser(String email, String password) {
+    public User getUser(String connection, String email, String password) {
         ResultSet rs;
         User user = new User();
         user.setEmail(email);
@@ -62,7 +62,7 @@ public class UserDao {
             log.error("No suitable driver found", e);
         }
         try {
-            Connection conn = getConnection(CONNECTION_URL);
+            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
             prepStat.setString(1, email);
             prepStat.setString(2, password);
@@ -73,11 +73,12 @@ public class UserDao {
             }
         } catch (SQLException e) {
             log.error("Cannot get user from user table", e);
+            throw new IllegalArgumentException("Cannot get user", e);
         }
         return user;
     }
 
-    public User getUser(int id) {
+    public User getUser(String connection, int id) {
         User user = new User();
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -87,7 +88,7 @@ public class UserDao {
             ResultSet rs;
 
             try {
-                Connection conn = getConnection(CONNECTION_URL);
+                Connection conn = getConnection(connection);
                 PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
                 prepStat.setInt(1, id);
                 rs = prepStat.executeQuery();
@@ -96,6 +97,7 @@ public class UserDao {
                 }
             }catch (SQLException e){
                 log.error("Cannot get user by id from user table", e);
+                throw new IllegalArgumentException("Cannot get user");
             }
             return user;
     }

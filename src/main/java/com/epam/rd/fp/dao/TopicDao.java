@@ -15,10 +15,9 @@ import static java.sql.DriverManager.getConnection;
 
 public class TopicDao {
     private static final Logger log = LogManager.getLogger(TopicDao.class);
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
     private static final String INSERT_VALUES_INTO_TOPIC_TABLE = "INSERT into topic (name, date, description, language) values (?, ?, ?, ?)";
 
-    public Topic getTopicById(int topic_id) {
+    public Topic getTopicById(String connection, int topic_id) {
         ResultSet rs;
         Topic topic = new Topic();
         topic.setId(topic_id);
@@ -29,7 +28,7 @@ public class TopicDao {
             log.error("No suitable driver found", e);
         }
         try {
-            Connection conn = getConnection(CONNECTION_URL);
+            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("Select * from topic where id = ?");
             prepStat.setInt(1, topic_id);
             rs = prepStat.executeQuery();
@@ -45,19 +44,20 @@ public class TopicDao {
                 }
             }
         }catch (SQLException e){
-            log.error("Cannot get user from user table", e);
+            log.error("Cannot get topic from topic table", e);
+            throw new IllegalArgumentException("Cannot get topic");
         }
         return topic;
     }
 
-    public void insertTopic(Topic topic){
+    public void insertTopic(String connection, Topic topic){
         ResultSet rs;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             log.error("No suitable driver found", e);
         }
-        try (Connection conn = getConnection(CONNECTION_URL);
+        try (Connection conn = getConnection(connection);
              PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_TOPIC_TABLE)) {
 
             prepStat.setString(1, topic.getName());
@@ -79,7 +79,7 @@ public class TopicDao {
         }
     }
 
-    public List<Topic> getFreeTopics(){
+    public List<Topic> getFreeTopics(String connection){
         List<Topic> topics = new ArrayList<>();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -89,7 +89,7 @@ public class TopicDao {
         ResultSet rs;
 
         try {
-            Connection conn = getConnection(CONNECTION_URL);
+            Connection conn = getConnection(connection);
             Statement statement = conn.createStatement();
             rs = statement.executeQuery("SELECT * FROM topic WHERE available = 'true'");
             while (rs.next()) {
@@ -102,18 +102,19 @@ public class TopicDao {
             }
         }catch (SQLException e){
             log.error("Cannot get free topics", e);
+            throw new IllegalArgumentException("Cannot get free topics");
         }
         return topics;
     }
 
-    public void updateTopicAvailability(Topic topic, boolean isAvailable){
+    public void updateTopicAvailability(String connection, Topic topic, boolean isAvailable){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             log.error("No suitable driver found", e);
         }
         try {
-            Connection conn = getConnection(CONNECTION_URL);
+            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET available = ? WHERE name = ?");
             prepStat.setString(1, Boolean.toString(isAvailable));
             prepStat.setString(2, topic.getName());
@@ -123,6 +124,4 @@ public class TopicDao {
             throw new IllegalArgumentException("Cannot change topic's availability");
         }
     }
-
-
 }
