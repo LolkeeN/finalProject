@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @WebServlet(name = "MeetingRegistrationServlet", value = "/meetingRegistration")
 public class MeetingRegistrationServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(LoginServlet.class);
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
@@ -22,6 +23,7 @@ public class MeetingRegistrationServlet extends HttpServlet {
         try {
             registeredUsersDao.registerUserForAMeeting(CONNECTION_URL, userId, meetingId);
         }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");

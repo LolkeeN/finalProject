@@ -124,4 +124,22 @@ public class TopicDao {
             throw new IllegalArgumentException("Cannot change topic's availability");
         }
     }
+
+    public void updateTopicDate(String connection, Topic topic, String date){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.error("No suitable driver found", e);
+        }
+        try {
+            Connection conn = getConnection(connection);
+            PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET date = ? WHERE name = ?");
+            prepStat.setString(1, date);
+            prepStat.setString(2, topic.getName());
+            prepStat.execute();
+        } catch (SQLException e) {
+            log.error("Cannot change topic's date", e);
+            throw new IllegalArgumentException("Cannot change topic's availability");
+        }
+    }
 }

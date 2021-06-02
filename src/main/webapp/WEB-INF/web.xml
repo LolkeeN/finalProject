@@ -13,6 +13,24 @@
         <servlet-name>mainPage</servlet-name>
         <url-pattern>/meetings</url-pattern>
     </servlet-mapping>
+<!--    <servlet>-->
+<!--        <servlet-name>adminPage</servlet-name>-->
+<!--        <jsp-file>/adminPage.jsp</jsp-file>-->
+<!--    </servlet>-->
+
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>adminPage</servlet-name>-->
+<!--        <url-pattern>/adminPage</url-pattern>-->
+<!--    </servlet-mapping>-->
+<!--    <servlet>-->
+<!--        <servlet-name>speakerPage</servlet-name>-->
+<!--        <jsp-file>/speakerPage.jsp</jsp-file>-->
+<!--    </servlet>-->
+
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>speakerPage</servlet-name>-->
+<!--        <url-pattern>/speakerPage</url-pattern>-->
+<!--    </servlet-mapping>-->
 
 <!--    <listener>-->
 <!--        <listener-class>com.epam.rd.fp.service.LiquibaseInitializer</listener-class>-->

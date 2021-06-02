@@ -30,6 +30,7 @@ public class LoginServlet extends HttpServlet {
             request.getSession().setAttribute("email", user.getEmail());
             request.getSession().setAttribute("password", user.getPassword());
             request.getSession().setAttribute("id", user.getId());
+            request.setAttribute("id", user.getId());
         }catch (IllegalArgumentException e){
             log.error(e.getMessage());
             exceptionCaught = true;

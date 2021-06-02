@@ -16,7 +16,11 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet(name = "CreateTopicServlet", value = "/createTopic")
@@ -28,6 +32,7 @@ public class CreateTopicServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         boolean exceptionCaught = false;
         TopicDao topicDao = new TopicDao();
+        DateFormat df = new SimpleDateFormat("dd.MM.yy");
         MeetingDao meetingDao = new MeetingDao();
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
 
@@ -47,15 +52,22 @@ public class CreateTopicServlet extends HttpServlet {
         topic.setDescription(description);
         topic.setLanguage(language);
         try {
-            topicDao.insertTopic(CONNECTION_URL, topic);
-
-
             Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, request.getParameter("meeting_name"));
+            String dateStr = meeting.getDate();
+            String topicDateStr = topic.getDate();
+            Date meetingDate = df.parse(dateStr);
+            Date topicDate = df.parse(topicDateStr);
+            if (topicDate.getTime() == (meetingDate.getTime())) {
+                topicDao.insertTopic(CONNECTION_URL, topic);
+            }else{
+                throw new IllegalArgumentException("Topic date must be equals to meeting date");
+            }
+
             List<Topic> topics = new ArrayList<>();
             topics.add(topic);
             meeting.setTopics(topics);
             meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topic.getId(), meeting.getId());
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ParseException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

@@ -52,6 +52,33 @@ public class MeetingTopicDao {
             }
         } catch (SQLException e) {
             log.error("Cannot get suggested topics", e);
+            throw new IllegalArgumentException("Cannot get suggested topics");
+        }
+        return topics;
+    }
+
+    public List<Topic> getMeetingsTopics(String connection, int meetingId) {
+        List<Topic> topics = new ArrayList<>();
+        TopicDao topicDao = new TopicDao();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.error("No suitable driver found", e);
+        }
+        ResultSet rs;
+
+        try {
+            Connection conn = getConnection(connection);
+            PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM meeting_topic WHERE meeting_id = ?");
+            prepStat.setInt(1, meetingId);
+            rs = prepStat.executeQuery();
+            while (rs.next()) {
+                Topic topic = topicDao.getTopicById(CONNECTION_URL, rs.getInt("topic_id"));
+                topics.add(topic);
+            }
+        } catch (SQLException e) {
+            log.error("Cannot get meeting's topics", e);
+            throw new IllegalArgumentException("Cannot get meeting's topics");
         }
         return topics;
     }
@@ -73,6 +100,26 @@ public class MeetingTopicDao {
         } catch (SQLException e) {
             log.error("Cannot delete meeting and topic connectivity", e);
             throw new IllegalArgumentException("Cannot delete meeting and topic connectivity");
+        }
+    }
+
+    public void updateMeetingTopic(String connection, int oldTopicId, int newTopicId, int meetingId){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.error("No suitable driver found", e);
+        }
+
+        try {
+            Connection conn = getConnection(connection);
+            PreparedStatement prepStat = conn.prepareStatement("UPDATE meeting_topic SET topic_id = ? WHERE meeting_id = ? AND topic_id = ?");
+            prepStat.setInt(1, newTopicId);
+            prepStat.setInt(2, meetingId);
+            prepStat.setInt(3, oldTopicId);
+            prepStat.execute();
+        } catch (SQLException e) {
+            log.error("Cannot update meeting's topic", e);
+            throw new IllegalArgumentException("Cannot update meeting's topic");
         }
     }
 }

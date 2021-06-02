@@ -21,13 +21,16 @@ public class BindSuggestedTopicWithMeetingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         boolean exceptionCaught = false;
         MeetingDao meetingDao = new MeetingDao();
+        TopicDao topicDao = new TopicDao();
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
 
         int topicId = Integer.parseInt(request.getParameter("topic_id"));
+        Topic topic = topicDao.getTopicById(CONNECTION_URL, topicId);
         String meetingName = request.getParameter("meeting_name");
 
         try {
             Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, meetingName);
+            topicDao.updateTopicDate(CONNECTION_URL, topic, meeting.getDate());
             meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topicId, meeting.getId());
             meetingTopicDao.deleteMeetingAndTopicConnectivityById(CONNECTION_URL, topicId, 1);
         }catch (IllegalArgumentException e){

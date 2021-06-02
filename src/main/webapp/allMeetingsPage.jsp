@@ -18,5 +18,9 @@
     <b>Choose meeting id to get registered and participant users count -> </b><input name="meeting_id"/><br/>
     <input type="submit" value="get registered and participants count"/>
 </form>
+<form action="getMeetingsTopics" method="get">
+    <b>Choose meeting id change it's topic -> </b><input name="meeting_id"/><br/>
+    <input type="submit" value="get registered and participants count"/>
+</form>
 </body>
 </html>

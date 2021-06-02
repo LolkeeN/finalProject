@@ -48,6 +48,7 @@ public class RegistrationServlet extends HttpServlet {
             request.getSession().setAttribute("first_name", user.getFirstName());
             request.getSession().setAttribute("last_name", user.getLastName());
             request.getSession().setAttribute("id", user.getId());
+            request.setAttribute("id", user.getId());
             request.getSession().setAttribute("email", user.getEmail());
             request.getSession().setAttribute("role", user.getRole().getValue());
         }catch (IllegalArgumentException e){

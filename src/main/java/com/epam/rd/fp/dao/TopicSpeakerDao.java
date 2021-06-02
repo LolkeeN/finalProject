@@ -60,4 +60,28 @@ public class TopicSpeakerDao {
         }
         return topicsList;
     }
+
+    public int getSpeakerIdByTopicId(String connection, int topicId){
+        int speakerId = 0;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.error("No suitable driver found", e);
+        }
+        ResultSet rs;
+
+        try {
+            Connection conn = getConnection(connection);
+            PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE topic_id = ?");
+            prepStat.setInt(1, topicId);
+            rs = prepStat.executeQuery();
+            while (rs.next()) {
+                speakerId = rs.getInt("speaker_id");
+            }
+        }catch (SQLException e){
+            log.error("Cannot get speaker's id", e);
+            throw new IllegalArgumentException("Cannot get speaker's id");
+        }
+        return speakerId;
+    }
 }

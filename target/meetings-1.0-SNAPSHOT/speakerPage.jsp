@@ -1,11 +1,9 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: vasyl
-  Date: 27.05.2021
-  Time: 15:16
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%if ((int)request.getSession().getAttribute("role") != 3){
+%>
+<jsp:forward page="accessDeniedPage.jsp"></jsp:forward>
+<% }
+%>
 <html>
 <head>
     <title>Speaker Page</title>
