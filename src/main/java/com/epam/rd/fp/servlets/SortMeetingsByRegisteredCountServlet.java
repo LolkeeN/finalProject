@@ -11,12 +11,12 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-@WebServlet(name = "GetAllMeetingsServlet", value = "/getAllMeetings")
-public class GetAllMeetingsServlet extends HttpServlet {
-    private static final Logger log = LogManager.getLogger(GetAllMeetingsServlet.class);
+@WebServlet(name = "SortMeetingsByRegisteredCountServlet", value = "/sortMeetingsByRegisteredCount")
+public class SortMeetingsByRegisteredCountServlet extends HttpServlet {
+    private static final Logger log = LogManager.getLogger(SortMeetingsByRegisteredCountServlet.class);
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
@@ -29,23 +29,28 @@ public class GetAllMeetingsServlet extends HttpServlet {
         List<Meeting> meetings;
         try {
             meetings = meetingDao.getAllMeetings(CONNECTION_URL);
+            request.setAttribute("meetings", meetings);
             for (Meeting meeting:meetings) {
                 meeting.setParticipantsCount(meetingParticipantsDao.countMeetingParticipants(CONNECTION_URL, meeting.getId()));
                 meeting.setRegisteredUsers(registeredUsersDao.countMeetingRegisteredUsers(CONNECTION_URL, meeting.getId()));
             }
-            request.setAttribute("meetings", meetings);
-        }catch (IllegalArgumentException e){
+            meetings.sort(new MeetingRegisteredUsersComparator());
+
+        } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
         }
         if (!exceptionCaught) {
-            if ((int)request.getSession().getAttribute("role") == 1) {
-                request.getRequestDispatcher("registrationForAMeeting.jsp").forward(request, response);
-            }else{
-                request.getRequestDispatcher("allMeetingsPage.jsp").forward(request, response);
-            }
+            request.getRequestDispatcher("allMeetingsPage.jsp").forward(request, response);
+        }
+    }
+
+    static class MeetingRegisteredUsersComparator  implements Comparator<Meeting> {
+        public int compare(Meeting a, Meeting b) {
+
+            return Integer.compare(a.getRegisteredUsers(), b.getRegisteredUsers());
         }
     }
 }

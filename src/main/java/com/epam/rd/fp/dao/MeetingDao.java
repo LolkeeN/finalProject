@@ -90,8 +90,6 @@ public class MeetingDao {
             log.error("No suitable driver found", e);
         }
         ResultSet rs;
-        ResultSet resultSet;
-
         try {
             Connection conn = getConnection(connection);
             Statement statement = conn.createStatement();
@@ -107,11 +105,6 @@ public class MeetingDao {
                     meeting.setLanguage(Language.RU);
                 }
                 meetings.add(meeting);
-            }
-            for (Meeting meeting:meetings) {
-                PreparedStatement prepStat = conn.prepareStatement("select location_id from meeting_location where meeting_id = ?");
-                prepStat.setInt(1, meeting.getId());
-                resultSet = prepStat.executeQuery();
             }
         }catch (SQLException e){
             log.error("Cannot get all meetings", e);
