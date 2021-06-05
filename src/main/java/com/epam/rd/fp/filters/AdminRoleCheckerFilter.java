@@ -1,35 +1,48 @@
-//package com.epam.rd.fp.filters;
-//
-//import com.epam.rd.fp.servlets.BindSuggestedTopicWithMeetingServlet;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
-//
-//import javax.servlet.*;
-//import javax.servlet.annotation.*;
-//import java.io.IOException;
-//
-//@WebFilter(servletNames = "/adminPage")
-//public class AdminRoleCheckerFilter implements Filter {
-//    private static final Logger log = LogManager.getLogger(AdminRoleCheckerFilter.class);
-//    private FilterConfig config = null;
-//    private boolean active = true;
-//
-//    public void init(FilterConfig config) throws ServletException {
-//    }
-//
-//    public void destroy() {
-//        config = null;
-//    }
-//
-//    @Override
-//    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
-//        if (active){
-//            if((int)request.getAttribute("role") != 2){
-//                System.out.println(request.getAttribute("role"));
-//                log.info("You are not an admin");
-//                request.getRequestDispatcher("accessDeniedPage.jsp").forward(request, response);
-//            }
-//        }
-//        chain.doFilter(request, response);
-//    }
-//}
+package com.epam.rd.fp.filters;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebFilter(urlPatterns = {"/adminPage.jsp", "/createLocation.jsp", "/createMeetingPage.jsp", "/createTopicPage.jsp",
+        "/changeMeetingTimeAndPlacePage.jsp", "/changeTopicBySpeakerPage.jsp", "/futureMeetingsPage",
+        "/meetingParticipantsAndRegisteredCount.jsp", "/pastMeetingsPage.jsp", "/setTopicSpeaker.jsp"})
+public class AdminRoleCheckerFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest httpReq =
+                (HttpServletRequest) req;
+
+        HttpSession session = httpReq.getSession();
+
+        int role = (int) session.getAttribute("role");
+
+        if (role != 2) {
+            session.setAttribute("errorMessage", "Access denied");
+            ((HttpServletResponse) resp).sendRedirect("errorPage.jsp");
+            return;
+        }
+
+        chain.doFilter(req, resp);
+    }
+
+}
