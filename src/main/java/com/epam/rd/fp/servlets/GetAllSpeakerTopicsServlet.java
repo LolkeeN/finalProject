@@ -9,6 +9,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "GetAllSpeakerTopicsServlet", value = "/getAllSpeakerTopics")
@@ -24,10 +27,12 @@ public class GetAllSpeakerTopicsServlet extends HttpServlet {
         TopicSpeakerDao topicSpeakerDao = new TopicSpeakerDao();
         List<Topic> topics;
         try {
-            int speakerId = topicSpeakerDao.getSpeakerIdByTopicId(CONNECTION_URL, topicId);
-            topics = topicSpeakerDao.getTopicIdBySpeakerId(CONNECTION_URL, speakerId);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            int speakerId = topicSpeakerDao.getSpeakerIdByTopicId(connection, topicId);
+            topics = topicSpeakerDao.getTopicIdBySpeakerId(connection, speakerId);
             request.setAttribute("topics", topics);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ClassNotFoundException | SQLException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

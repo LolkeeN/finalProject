@@ -14,7 +14,7 @@
     <br/>
 </c:forEach>
 </body>
-<form action="bindFreeTopic" method="get">
+<form action="bindFreeTopic" method="post">
 <b>Choose topic id -> </b><input name="topic_id"/><br/>
 <input type="submit" value="Get a topic"/>
 </form>

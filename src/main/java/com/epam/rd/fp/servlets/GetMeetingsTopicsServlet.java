@@ -9,6 +9,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +29,11 @@ public class GetMeetingsTopicsServlet extends HttpServlet {
         List<Topic> topics;
 
         try {
-            topics = meetingTopicDao.getMeetingsTopics(CONNECTION_URL, meetingId);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            topics = meetingTopicDao.getMeetingsTopics(connection, meetingId);
             request.setAttribute("topics", topics);
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

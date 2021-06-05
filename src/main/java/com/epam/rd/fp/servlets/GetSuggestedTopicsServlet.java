@@ -10,6 +10,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "GetSuggestedTopicsServlet", value = "/getSuggestedTopics")
@@ -22,9 +25,11 @@ public class GetSuggestedTopicsServlet extends HttpServlet {
         boolean exceptionCaught = false;
         MeetingTopicDao  meetingTopicDao = new MeetingTopicDao();
         try {
-            List<Topic> topics = meetingTopicDao.getSuggestedTopics(CONNECTION_URL);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            List<Topic> topics = meetingTopicDao.getSuggestedTopics(connection);
             request.setAttribute("suggestedTopics", topics);
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

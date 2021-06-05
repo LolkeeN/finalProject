@@ -20,15 +20,9 @@ public class LocationDao {
     private static final String GET_LOCATION_ID_BY_ITS_DATA = "SELECT  id from location where country = ? AND city = ? AND street = ? AND house = ? AND room = ?";
     private static final String GET_LOCATION_DATA_BY_ID = "SELECT * FROM location WHERE id = ?";
 
-    public void insertLocation(String connection, Location location) {
+    public void insertLocation(Connection conn, Location location) {
         ResultSet rs;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try (Connection conn = getConnection(connection);
-             PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)) {
+        try (PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)) {
 
             prepStat.setString(1, location.getCountry());
             prepStat.setString(2, location.getCity());
@@ -55,18 +49,11 @@ public class LocationDao {
         }
     }
 
-    public Location getLocation(String connection, int id) {
+    public Location getLocation(Connection conn, int id) {
         ResultSet rs;
         Location location = new Location();
         location.setId(id);
-
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID);
             prepStat.setInt(1, id);
             rs = prepStat.executeQuery();
@@ -76,6 +63,7 @@ public class LocationDao {
                 location.setStreet(rs.getString("street"));
                 location.setRoom(rs.getString("room"));
                 location.setHouse(rs.getString("house"));
+                location.setCity(rs.getString("city"));
                 if (rs.getString("language").equals("EN")) {
                     location.setLanguage(Language.EN);
                 } else {

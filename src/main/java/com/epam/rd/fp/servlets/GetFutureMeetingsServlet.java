@@ -9,6 +9,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +33,9 @@ public class GetFutureMeetingsServlet extends HttpServlet {
         DateFormat df = new SimpleDateFormat("dd.MM.yy");
 
         try {
-            allMeetings = meetingDao.getAllMeetings(CONNECTION_URL);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            allMeetings = meetingDao.getAllMeetings(connection);
             for (Meeting meeting : allMeetings) {
                 String dateStr = meeting.getDate();
                 Date date = df.parse(dateStr);
@@ -39,7 +44,7 @@ public class GetFutureMeetingsServlet extends HttpServlet {
                 }
             }
             request.setAttribute("futureMeetings", futureMeetings);
-        }catch (IllegalArgumentException | ParseException e ){
+        }catch (IllegalArgumentException | ParseException | ClassNotFoundException | SQLException e ){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

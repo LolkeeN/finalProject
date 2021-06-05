@@ -13,6 +13,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +26,16 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         try {
             createTopicAndBindWithMeeting(request);
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
@@ -37,9 +46,11 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
         }
     }
 
-    static void createTopicAndBindWithMeeting(HttpServletRequest request) {
+    static void createTopicAndBindWithMeeting(HttpServletRequest request) throws ClassNotFoundException, SQLException {
         TopicDao topicDao = new TopicDao();
         MeetingDao meetingDao = new MeetingDao();
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection = DriverManager.getConnection(CONNECTION_URL);
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
 
         String name = request.getParameter("name");
@@ -57,14 +68,14 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
         topic.setDate(date);
         topic.setDescription(description);
         topic.setLanguage(language);
-        topicDao.insertTopic(CONNECTION_URL, topic);
-        topicDao.updateTopicAvailability(CONNECTION_URL, topic, false);
+        topicDao.insertTopic(connection, topic);
+        topicDao.updateTopicAvailability(connection, topic, false);
 
 
-        Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, request.getParameter("meeting_name"));
+        Meeting meeting = meetingDao.getMeeting(connection, request.getParameter("meeting_name"));
         List<Topic> topics = new ArrayList<>();
         topics.add(topic);
         meeting.setTopics(topics);
-        meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topic.getId(), meeting.getId());
+        meetingTopicDao.bindTopicIdWithMeetingId(connection, topic.getId(), meeting.getId());
     }
 }

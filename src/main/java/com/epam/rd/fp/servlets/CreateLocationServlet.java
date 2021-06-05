@@ -14,6 +14,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @WebServlet(name = "CreateLocationServlet", value = "/createLocation")
@@ -23,7 +25,13 @@ public class CreateLocationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         boolean exceptionCaught = false;
+        request.setCharacterEncoding("UTF-8");
         LocationDao locationDao = new LocationDao();
         String country = request.getParameter("country");
         String city = request.getParameter("city");
@@ -44,8 +52,10 @@ public class CreateLocationServlet extends HttpServlet {
         location.setStreet(street);
         location.setLanguage(language);
         try {
-            locationDao.insertLocation(CONNECTION_URL, location);
-        }catch (IllegalArgumentException e){
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            locationDao.insertLocation(connection, location);
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

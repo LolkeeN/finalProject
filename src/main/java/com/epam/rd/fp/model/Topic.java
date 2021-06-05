@@ -19,6 +19,19 @@ public class Topic{
     public Topic() {
     }
 
+    @Override
+    public String toString() {
+        return "Topic{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", speaker=" + speaker +
+                ", date='" + date + '\'' +
+                ", language=" + language +
+                ", availability=" + availability +
+                '}';
+    }
+
     public boolean isAvailability() {
         return availability;
     }

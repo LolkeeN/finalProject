@@ -19,15 +19,9 @@ public class UserDao {
     private static final String INSERT_VALUES_INTO_USER_TABLE = "INSERT into users (first_name,last_name, email, role, password) values (?, ?, ?,?, ?)";
     private static final String SELECT_USER_ID_BY_EMAIL = "SELECT  id from users where email = ?";
 
-    public void insertUser(String connection, User user) {
+    public void insertUser(Connection conn, User user) {
         ResultSet rs;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try (Connection conn = getConnection(connection);
-             PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
+        try (PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
 
             prepStat.setString(1, user.getFirstName());
             prepStat.setString(2, user.getLastName());
@@ -46,23 +40,17 @@ public class UserDao {
 
         } catch (SQLException e) {
             log.error("Cannot insert user into user table", e);
-            throw new IllegalArgumentException("Cannot insert user");
+            throw new IllegalArgumentException("Cannot insert user", e);
         }
     }
 
-    public User getUser(String connection, String email, String password) {
+    public User getUser(Connection conn, String email, String password) {
         ResultSet rs;
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
             prepStat.setString(1, email);
             prepStat.setString(2, password);
@@ -78,17 +66,10 @@ public class UserDao {
         return user;
     }
 
-    public User getUser(String connection, int id) {
+    public User getUser(Connection conn, int id) {
         User user = new User();
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-            } catch (ClassNotFoundException e) {
-                log.error("No suitable driver found", e);
-            }
             ResultSet rs;
-
             try {
-                Connection conn = getConnection(connection);
                 PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
                 prepStat.setInt(1, id);
                 rs = prepStat.executeQuery();

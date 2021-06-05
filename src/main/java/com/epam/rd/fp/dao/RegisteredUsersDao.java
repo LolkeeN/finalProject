@@ -14,18 +14,10 @@ import static java.sql.DriverManager.getConnection;
 public class RegisteredUsersDao {
     private static final Logger log = LogManager.getLogger(RegisteredUsersDao.class);
 
-    public void registerUserForAMeeting(String connection, int userId, int meetingId){
+    public void registerUserForAMeeting(Connection conn, int userId, int meetingId){
         int rowcount = 0;
         ResultSet rs;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-
-
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
             preparedStatement.setInt(1, meetingId);
             preparedStatement.setInt(2, userId);
@@ -47,18 +39,10 @@ public class RegisteredUsersDao {
         }
     }
 
-    public int countMeetingRegisteredUsers(String connection, int meetingId){
+    public int countMeetingRegisteredUsers(Connection conn, int meetingId){
         int userCount = 0;
         ResultSet rs;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-
-
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM registered_users where meeting_id = ?");
             preparedStatement.setInt(1, meetingId);
             rs = preparedStatement.executeQuery();
@@ -72,21 +56,11 @@ public class RegisteredUsersDao {
         }
     }
 
-    public boolean isRegistered(String connection, int userId, int meetingId){
+    public boolean isRegistered(Connection conn, int userId, int meetingId){
         int rowcount = 0;
         ResultSet rs;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-
-
-        }
-        try {
-            PreparedStatement preparedStatement;
-            try (Connection conn = getConnection(connection)) {
-                preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
-
+            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
                 preparedStatement.setInt(1, meetingId);
                 preparedStatement.setInt(2, userId);
                 rs = preparedStatement.executeQuery();

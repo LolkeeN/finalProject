@@ -17,18 +17,11 @@ public class TopicDao {
     private static final Logger log = LogManager.getLogger(TopicDao.class);
     private static final String INSERT_VALUES_INTO_TOPIC_TABLE = "INSERT into topic (name, date, description, language) values (?, ?, ?, ?)";
 
-    public Topic getTopicById(String connection, int topic_id) {
+    public Topic getTopicById(Connection conn, int topic_id) {
         ResultSet rs;
         Topic topic = new Topic();
         topic.setId(topic_id);
-
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("Select * from topic where id = ?");
             prepStat.setInt(1, topic_id);
             rs = prepStat.executeQuery();
@@ -50,15 +43,9 @@ public class TopicDao {
         return topic;
     }
 
-    public void insertTopic(String connection, Topic topic){
+    public void insertTopic(Connection conn, Topic topic){
         ResultSet rs;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try (Connection conn = getConnection(connection);
-             PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_TOPIC_TABLE)) {
+        try (PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_TOPIC_TABLE)) {
 
             prepStat.setString(1, topic.getName());
             prepStat.setString(2, topic.getDate());
@@ -79,17 +66,11 @@ public class TopicDao {
         }
     }
 
-    public List<Topic> getFreeTopics(String connection){
+    public List<Topic> getFreeTopics(Connection conn){
         List<Topic> topics = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
         ResultSet rs;
 
         try {
-            Connection conn = getConnection(connection);
             Statement statement = conn.createStatement();
             rs = statement.executeQuery("SELECT * FROM topic WHERE available = 'true'");
             while (rs.next()) {
@@ -107,14 +88,8 @@ public class TopicDao {
         return topics;
     }
 
-    public void updateTopicAvailability(String connection, Topic topic, boolean isAvailable){
+    public void updateTopicAvailability(Connection conn, Topic topic, boolean isAvailable){
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET available = ? WHERE name = ?");
             prepStat.setString(1, Boolean.toString(isAvailable));
             prepStat.setString(2, topic.getName());
@@ -125,14 +100,8 @@ public class TopicDao {
         }
     }
 
-    public void updateTopicDate(String connection, Topic topic, String date){
+    public void updateTopicDate(Connection conn, Topic topic, String date){
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET date = ? WHERE name = ?");
             prepStat.setString(1, date);
             prepStat.setString(2, topic.getName());

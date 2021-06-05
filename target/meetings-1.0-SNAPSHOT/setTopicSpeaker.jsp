@@ -11,7 +11,7 @@
     <title>Set topic's speaker</title>
 </head>
 <body>
-<form action="bindSpeakerWithTopic" method="get">
+<form action="bindSpeakerWithTopic" method="post">
     <b>Speaker id -> </b><input name="speaker_id"/><br/>
     <b>Topic id -> </b><input name="topic_id"/><br/>
     <input type="submit" value="Bind them"/>

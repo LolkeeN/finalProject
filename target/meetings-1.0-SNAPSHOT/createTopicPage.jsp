@@ -11,7 +11,7 @@
     <title>Create Topic</title>
 </head>
 <body>
-<form action="createTopic" method="get">
+<form action="createTopic" method="post">
     <b>Name -> </b><input name="name"/><br/>
     <b>Date -> </b><input name="date"/><br/>
     <b>language -> </b><input name="language"/><br/>

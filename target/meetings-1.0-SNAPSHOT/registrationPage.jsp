@@ -11,7 +11,7 @@
     <title>Registration</title>
 </head>
 <body>
-<form action="registration" method="get">
+<form action="registration" method="post">
     <b>Email -> </b><input name="email"/><br/>
     <b>Last name -></b><input name="lastName"/><br/>
     <b>First Name -> </b><input name="firstName"/><br/>

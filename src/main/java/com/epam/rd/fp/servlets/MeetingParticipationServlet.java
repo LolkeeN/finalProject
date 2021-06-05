@@ -9,6 +9,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 @WebServlet(name = "MeetingParticipationServlet", value = "/meetingParticipation")
 public class MeetingParticipationServlet extends HttpServlet {
@@ -17,18 +20,26 @@ public class MeetingParticipationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         RegisteredUsersDao registeredUsersDao = new RegisteredUsersDao();
         MeetingParticipantsDao meetingParticipantsDao = new MeetingParticipantsDao();
         int userId = (int) request.getSession().getAttribute("id");
         int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
         try {
-            if (registeredUsersDao.isRegistered(CONNECTION_URL, userId, meetingId)) {
-                meetingParticipantsDao.addMeetingParticipant(CONNECTION_URL, userId, meetingId);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            if (registeredUsersDao.isRegistered(connection, userId, meetingId)) {
+                meetingParticipantsDao.addMeetingParticipant(connection, userId, meetingId);
             }else{
                 throw new IllegalArgumentException("You are not registered for this meeting. You have to register first!");
             }
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

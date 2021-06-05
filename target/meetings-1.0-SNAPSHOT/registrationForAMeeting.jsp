@@ -14,11 +14,11 @@
     ${meeting.language} |
     <br/>
 </c:forEach>
-<form action="meetingRegistration" method="get">
+<form action="meetingRegistration" method="post">
     <b>Choose meeting id for registration -> </b><input name="meeting_id"/><br/>
     <input type="submit" value="Registration"/>
 </form>
-<form action="meetingParticipation" method="get">
+<form action="meetingParticipation" method="post">
     <b>Choose meeting id to take part -> </b><input name="meeting_id"/><br/>
     <input type="submit" value="Take part!"/>
 </form>

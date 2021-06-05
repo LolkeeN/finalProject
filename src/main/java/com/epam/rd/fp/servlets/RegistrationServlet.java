@@ -3,10 +3,14 @@ package com.epam.rd.fp.servlets;
 import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Role;
+import liquibase.pro.packaged.C;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -17,41 +21,52 @@ public class RegistrationServlet extends HttpServlet {
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-      boolean exceptionCaught = false;
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            log.error("No suitable driver found", e);
+        }
+        request.setCharacterEncoding("UTF-8");
+        boolean exceptionCaught = false;
         String email = request.getParameter("email");
-      String password = request.getParameter("password");
-      String firstName = request.getParameter("firstName");
-      String lastName = request.getParameter("lastName");
-      String roleValue = request.getParameter("role");
-      roleValue = roleValue.toLowerCase();
-      Role role;
-      switch (roleValue){
-          case "user":
-              role = Role.USER;
-              break;
-          case "speaker":
-              role = Role.SPEAKER;
-              break;
-          case "specialkeyforadminrole":
-              role = Role.MODERATOR;
-              break;
-          case "":
-              log.info("Role hasn't been chosen");
-              throw new IllegalArgumentException("You've't chosen a role");
-          default:
-              throw new IllegalStateException("Unexpected value: " + roleValue);
-      }
+        String password = request.getParameter("password");
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String roleValue = request.getParameter("role");
+        roleValue = roleValue.toLowerCase();
+        Role role;
+        switch (roleValue) {
+            case "user":
+                role = Role.USER;
+                break;
+            case "speaker":
+                role = Role.SPEAKER;
+                break;
+            case "specialkeyforadminrole":
+                role = Role.MODERATOR;
+                break;
+            case "":
+                log.info("Role hasn't been chosen");
+                throw new IllegalArgumentException("You've't chosen a role");
+            default:
+                throw new IllegalStateException("Unexpected value: " + roleValue);
+        }
         User user = new User(firstName, lastName, password, email, role);
         UserDao userDao = new UserDao();
         try {
-            userDao.insertUser(CONNECTION_URL, user);
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            userDao.insertUser(connection, user);
             request.getSession().setAttribute("first_name", user.getFirstName());
             request.getSession().setAttribute("last_name", user.getLastName());
             request.getSession().setAttribute("id", user.getId());
-            request.setAttribute("id", user.getId());
+//                request.setAttribute("id", user.getId());
             request.getSession().setAttribute("email", user.getEmail());
             request.getSession().setAttribute("role", user.getRole().getValue());
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException | SQLException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
@@ -65,9 +80,9 @@ public class RegistrationServlet extends HttpServlet {
     static void checkRoleAndRedirect(HttpServletRequest request, HttpServletResponse response, User user) throws ServletException, IOException {
         if (user.getRole().getValue() == 1) {
             request.getRequestDispatcher("mainPage.jsp").forward(request, response);
-        }else if (user.getRole().getValue() == 2){
+        } else if (user.getRole().getValue() == 2) {
             response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
-        }else if (user.getRole().getValue() == 3){
+        } else if (user.getRole().getValue() == 3) {
             request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
 
         }

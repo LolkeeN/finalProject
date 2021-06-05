@@ -11,7 +11,7 @@
     <title>Change meeting place and time</title>
 </head>
 <body>
-<form action="changeMeetingTimeAndPlace" method="get">
+<form action="changeMeetingTimeAndPlace" method="post">
     <b>Meeting name -> </b><input name="name"/><br/>
     <b>Date -> </b><input name="date"/><br/>
     <b>Location id -> </b><input name="location_id"/><br/>

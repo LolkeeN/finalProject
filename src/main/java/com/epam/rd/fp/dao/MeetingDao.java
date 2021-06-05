@@ -10,7 +10,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.sql.DriverManager.getConnection;
@@ -23,15 +27,21 @@ public class MeetingDao {
     private static final String SELECT_MEETING_DATA_BY_NAME = "SELECT * FROM meeting WHERE name = ? ";
     private static final String UPDATE_MEETING_DATE_BY_NAME = "UPDATE meeting SET date = ? WHERE name = ?";
 
-    public void insertMeeting(String connection, Meeting meeting) {
+    public void insertMeeting(Connection conn, Meeting meeting) {
         ResultSet rs;
+        DateFormat df = new SimpleDateFormat("dd.MM.yy");
+        Date meetingDate;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
+            meetingDate = df.parse(meeting.getDate());
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid date format");
         }
-        try (Connection conn = getConnection(connection);
-             PreparedStatement prepStat = conn.prepareStatement(INSERT_MEETING_INTO_MEETING_TABLE)) {
+        Date date = new Date();
+        if (date.getTime() != (meetingDate.getTime())) {
+            throw new IllegalArgumentException("Cannot create meeting with the date that has passed");
+        }
+
+        try (PreparedStatement prepStat = conn.prepareStatement(INSERT_MEETING_INTO_MEETING_TABLE)) {
 
             prepStat.setString(1, meeting.getName());
             prepStat.setString(2, meeting.getDate());
@@ -51,17 +61,11 @@ public class MeetingDao {
         }
     }
 
-    public Meeting getMeeting(String connection, String name) {
+    public Meeting getMeeting(Connection conn, String name) {
         ResultSet rs;
         Meeting meeting = new Meeting();
         meeting.setName(name);
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement(SELECT_MEETING_DATA_BY_NAME);
             prepStat.setString(1, name);
             rs = prepStat.executeQuery();
@@ -81,8 +85,7 @@ public class MeetingDao {
         return meeting;
     }
 
-    public List<Meeting> getAllMeetings(String connection){
-        LocationDao locationDao = new LocationDao();
+    public List<Meeting> getAllMeetings(Connection conn){
         List<Meeting> meetings = new ArrayList<>();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -91,7 +94,6 @@ public class MeetingDao {
         }
         ResultSet rs;
         try {
-            Connection conn = getConnection(connection);
             Statement statement = conn.createStatement();
             rs = statement.executeQuery("SELECT * FROM meeting where id != 1");
             while (rs.next()) {
@@ -113,16 +115,10 @@ public class MeetingDao {
         return meetings;
     }
 
-    public void setMeetingDate(String connection, String name, String date){
+    public void setMeetingDate(Connection conn, String name, String date){
         Meeting meeting = new Meeting();
         meeting.setName(name);
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement(UPDATE_MEETING_DATE_BY_NAME);
             prepStat.setString(1, date);
             prepStat.setString(2, name);

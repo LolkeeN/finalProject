@@ -9,6 +9,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
@@ -17,13 +20,21 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         UserDao userDao = new UserDao();
         User user = new User();
         try {
-            user = userDao.getUser(CONNECTION_URL, email, password);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            user = userDao.getUser(connection, email, password);
             request.getSession().setAttribute("firstName", user.getFirstName());
             request.getSession().setAttribute("lastName", user.getLastName());
             request.getSession().setAttribute("role", user.getRole().getValue());
@@ -31,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             request.getSession().setAttribute("password", user.getPassword());
             request.getSession().setAttribute("id", user.getId());
             request.setAttribute("id", user.getId());
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
@@ -45,10 +56,5 @@ public class LoginServlet extends HttpServlet {
         if(!exceptionCaught) {
             RegistrationServlet.checkRoleAndRedirect(request, response, user);
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
     }
 }

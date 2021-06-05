@@ -12,6 +12,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 @WebServlet(name = "BindFreeTopicServlet", value = "/bindFreeTopic")
 public class BindFreeTopicServlet extends HttpServlet {
@@ -20,31 +23,40 @@ public class BindFreeTopicServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean exceptionCaught = false;
-        TopicDao topicDao = new TopicDao();
-        UserDao userDao = new UserDao();
-        Topic topic = topicDao.getTopicById(CONNECTION_URL, Integer.parseInt(request.getParameter("topic_id")));
-        User user = userDao.getUser(CONNECTION_URL, (Integer) request.getSession().getAttribute("id"));
-        try {
-            bindTopicToSpeaker(request, topic, user, log);
-        }catch (IllegalArgumentException e){
-            exceptionCaught = true;
-            request.getSession().setAttribute("errorMessage", e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
-        }
-        topicDao.updateTopicAvailability(CONNECTION_URL, topic, false);
-        if (!exceptionCaught) {
-            request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
-        }
+
     }
 
-    static void bindTopicToSpeaker(HttpServletRequest request, Topic topic, User user, Logger log) {
+    static void bindTopicToSpeaker(HttpServletRequest request, Topic topic, User user, Logger log, Connection conn) {
         user.setId((Integer) request.getSession().getAttribute("id"));
         if (user.getRole().getValue() != 3){
             log.info("Cannot set a topic to non-speaker, user role is not a speaker");
             throw new IllegalArgumentException("Cannot set a topic to non-speaker");
         }
         TopicSpeakerDao topicSpeakerDao = new TopicSpeakerDao();
-        topicSpeakerDao.bindTopicWithSpeakerId(CONNECTION_URL, topic.getId(), user.getId());
+        topicSpeakerDao.bindTopicWithSpeakerId(conn, topic.getId(), user.getId());
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        boolean exceptionCaught = false;
+        TopicDao topicDao = new TopicDao();
+        UserDao userDao = new UserDao();
+        Topic topic;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            topic = topicDao.getTopicById(connection, Integer.parseInt(request.getParameter("topic_id")));
+            User user = userDao.getUser(connection, (Integer) request.getSession().getAttribute("id"));
+            bindTopicToSpeaker(request, topic, user, log, connection);
+            topicDao.updateTopicAvailability(connection, topic, false);
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }
+        if (!exceptionCaught) {
+            request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
+        }
     }
 }

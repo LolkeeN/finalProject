@@ -11,7 +11,7 @@
     <title>Suggest a topic</title>
 </head>
 <body>
-<form action="createSuggestedTopic" method="get">
+<form action="createSuggestedTopic" method="post">
   <b>Name -> </b><input name="name"/><br/>
   <b>Date -> </b><input name="date"/><br/>
   <b>language -> </b><input name="language"/><br/>

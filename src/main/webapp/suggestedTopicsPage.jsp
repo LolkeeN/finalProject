@@ -13,7 +13,7 @@
     ${topic.description} |
     <br/>
 </c:forEach>
-<form action="bindSuggestedTopicWithMeeting" method="get">
+<form action="bindSuggestedTopicWithMeeting" method="post">
     <b>Choose topic id -> </b><input name="topic_id"/><br/>
     <b>Choose meeting name -> </b><input name="meeting_name"/><br/>
     <input type="submit" value="Bind topic to meeting"/>

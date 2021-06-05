@@ -9,6 +9,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "GetFreeTopicsServlet", value = "/getFreeTopics")
@@ -21,9 +24,11 @@ public class GetFreeTopicsServlet extends HttpServlet {
         boolean exceptionCaught = false;
         TopicDao topicDao = new TopicDao();
         try {
-            List<Topic> topics = topicDao.getFreeTopics(CONNECTION_URL);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            List<Topic> topics = topicDao.getFreeTopics(connection);
             request.setAttribute("freeTopics", topics);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | SQLException | ClassNotFoundException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

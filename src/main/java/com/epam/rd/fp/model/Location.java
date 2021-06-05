@@ -19,6 +19,7 @@ public class Location {
                 ", street='" + street + '\'' +
                 ", house='" + house + '\'' +
                 ", room='" + room + '\'' +
+                ", language='" + language + '\'' +
                 '}';
     }
 

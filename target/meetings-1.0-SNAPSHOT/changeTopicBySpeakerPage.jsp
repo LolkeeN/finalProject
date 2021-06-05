@@ -13,7 +13,7 @@
     ${topic.language} |
     <br/>
 </c:forEach>
-<form action="changeTopicBySpeaker" method="get">
+<form action="changeTopicBySpeaker" method="post">
     <b>Choose new topic id -> </b><input name="topic_id"/><br/>
     <input type="submit" value="Change topic"/>
 </form>

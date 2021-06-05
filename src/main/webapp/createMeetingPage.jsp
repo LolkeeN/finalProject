@@ -4,7 +4,7 @@
     <title>Create meeting</title>
 </head>
 <body>
-<form action="createMeeting" method="get">
+<form action="createMeeting" method="post">
     <b>Name -> </b><input name="meeting_name"/><br/>
     <b>Date -> </b><input name="date"/><br/>
     <b>Location id -> </b><input name="location_id"/><br/>

@@ -11,6 +11,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,15 +31,17 @@ public class SortMeetingsByRegisteredCountServlet extends HttpServlet {
 
         List<Meeting> meetings;
         try {
-            meetings = meetingDao.getAllMeetings(CONNECTION_URL);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            meetings = meetingDao.getAllMeetings(connection);
             request.setAttribute("meetings", meetings);
             for (Meeting meeting:meetings) {
-                meeting.setParticipantsCount(meetingParticipantsDao.countMeetingParticipants(CONNECTION_URL, meeting.getId()));
-                meeting.setRegisteredUsers(registeredUsersDao.countMeetingRegisteredUsers(CONNECTION_URL, meeting.getId()));
+                meeting.setParticipantsCount(meetingParticipantsDao.countMeetingParticipants(connection, meeting.getId()));
+                meeting.setRegisteredUsers(registeredUsersDao.countMeetingRegisteredUsers(connection, meeting.getId()));
             }
             meetings.sort(new MeetingRegisteredUsersComparator());
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ClassNotFoundException | SQLException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

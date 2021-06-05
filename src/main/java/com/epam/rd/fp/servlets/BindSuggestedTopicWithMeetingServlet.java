@@ -12,6 +12,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 @WebServlet(name = "BindSuggestedTopicWithMeetingServlet", value = "/bindSuggestedTopicWithMeeting")
 public class BindSuggestedTopicWithMeetingServlet extends HttpServlet {
@@ -19,21 +22,29 @@ public class BindSuggestedTopicWithMeetingServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(BindSuggestedTopicWithMeetingServlet.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         MeetingDao meetingDao = new MeetingDao();
         TopicDao topicDao = new TopicDao();
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
 
         int topicId = Integer.parseInt(request.getParameter("topic_id"));
-        Topic topic = topicDao.getTopicById(CONNECTION_URL, topicId);
         String meetingName = request.getParameter("meeting_name");
 
         try {
-            Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, meetingName);
-            topicDao.updateTopicDate(CONNECTION_URL, topic, meeting.getDate());
-            meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topicId, meeting.getId());
-            meetingTopicDao.deleteMeetingAndTopicConnectivityById(CONNECTION_URL, topicId, 1);
-        }catch (IllegalArgumentException e){
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            Topic topic = topicDao.getTopicById(connection, topicId);
+            Meeting meeting = meetingDao.getMeeting(connection, meetingName);
+            topicDao.updateTopicDate(connection, topic, meeting.getDate());
+            meetingTopicDao.bindTopicIdWithMeetingId(connection, topicId, meeting.getId());
+            meetingTopicDao.deleteMeetingAndTopicConnectivityById(connection, topicId, 1);
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

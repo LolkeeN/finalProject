@@ -18,14 +18,8 @@ public class TopicSpeakerDao {
     private static final Logger log = LogManager.getLogger(TopicSpeakerDao.class);
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
-    public void bindTopicWithSpeakerId(String connection, int topic_id, int speaker_id) {
+    public void bindTopicWithSpeakerId(Connection conn, int topic_id, int speaker_id) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("INSERT INTO topic_speaker (topic_id, speaker_id) values (?, ?)");
             prepStat.setInt(1, topic_id);
             prepStat.setInt(2, speaker_id);
@@ -36,23 +30,17 @@ public class TopicSpeakerDao {
         }
     }
 
-    public List<Topic> getTopicIdBySpeakerId(String connection, int speakerId){
+    public List<Topic> getTopicIdBySpeakerId(Connection conn, int speakerId){
         TopicDao topicDao = new TopicDao();
         List<Topic> topicsList = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
         ResultSet rs;
 
         try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE speaker_id = ?");
             prepStat.setInt(1, speakerId);
             rs = prepStat.executeQuery();
             while (rs.next()) {
-                topicsList.add(topicDao.getTopicById(CONNECTION_URL, rs.getInt("topic_id")));
+                topicsList.add(topicDao.getTopicById(conn, rs.getInt("topic_id")));
             }
         }catch (SQLException e){
             log.error("Cannot get speaker's topics", e);
@@ -61,17 +49,11 @@ public class TopicSpeakerDao {
         return topicsList;
     }
 
-    public int getSpeakerIdByTopicId(String connection, int topicId){
+    public int getSpeakerIdByTopicId(Connection conn, int topicId){
         int speakerId = 0;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
         ResultSet rs;
 
         try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE topic_id = ?");
             prepStat.setInt(1, topicId);
             rs = prepStat.executeQuery();

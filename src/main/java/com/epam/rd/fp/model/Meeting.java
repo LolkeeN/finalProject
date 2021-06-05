@@ -104,7 +104,18 @@ public class Meeting implements Comparable<Meeting> {
         return -1;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Meeting{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date='" + date + '\'' +
+                ", topics=" + topics +
+                ", registeredUsers=" + registeredUsers +
+                ", participantsCount=" + participantsCount +
+                ", location=" + location +
+                ", language=" + language +
+                '}';
+    }
 }
 

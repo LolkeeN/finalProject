@@ -15,14 +15,8 @@ import static java.sql.DriverManager.getConnection;
 public class MeetingLocationDao {
     private static final Logger log = LogManager.getLogger(MeetingLocationDao.class);
 
-    public void bindLocationIdWithMeetingId(String connection, int locationId, int meetingId) {
+    public void bindLocationIdWithMeetingId(Connection conn, int locationId, int meetingId) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("INSERT INTO meeting_location (meeting_id, location_id) values (?, ?)");
             prepStat.setInt(1, meetingId);
             prepStat.setInt(2, locationId);
@@ -33,14 +27,8 @@ public class MeetingLocationDao {
         }
     }
 
-    public void setMeetingLocation(String connection, int meetingId, int locationId){
+    public void setMeetingLocation(Connection conn, int meetingId, int locationId){
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("UPDATE meeting_location SET location_id = ? WHERE meeting_id = ?");
             prepStat.setInt(1, locationId);
             prepStat.setInt(2, meetingId);

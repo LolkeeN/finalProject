@@ -12,6 +12,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "GetMeetingRegisteredAndParticipantsCountServlet", value = "/getMeetingRegisteredAndParticipantsCount")
@@ -29,11 +32,13 @@ public class GetMeetingRegisteredAndParticipantsCountServlet extends HttpServlet
         int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
 
         try {
-            participantsCount = meetingParticipantsDao.countMeetingParticipants(CONNECTION_URL, meetingId);
-            registeredCount = registeredUsersDao.countMeetingRegisteredUsers(CONNECTION_URL, meetingId);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            participantsCount = meetingParticipantsDao.countMeetingParticipants(connection, meetingId);
+            registeredCount = registeredUsersDao.countMeetingRegisteredUsers(connection, meetingId);
             request.getSession().setAttribute("participants_count", participantsCount);
             request.getSession().setAttribute("registered_count", registeredCount);
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

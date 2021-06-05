@@ -14,14 +14,8 @@ public class MeetingTopicDao {
     private static final Logger log = LogManager.getLogger(MeetingTopicDao.class);
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
-    public void bindTopicIdWithMeetingId(String connection, int topicId, int meetingId) {
+    public void bindTopicIdWithMeetingId(Connection conn, int topicId, int meetingId) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("INSERT INTO meeting_topic (meeting_id, topic_id) values (?, ?)");
             prepStat.setInt(1, meetingId);
             prepStat.setInt(2, topicId);
@@ -32,22 +26,16 @@ public class MeetingTopicDao {
         }
     }
 
-    public List<Topic> getSuggestedTopics(String connection) {
+    public List<Topic> getSuggestedTopics(Connection conn) {
         List<Topic> topics = new ArrayList<>();
         TopicDao topicDao = new TopicDao();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
         ResultSet rs;
 
         try {
-            Connection conn = getConnection(connection);
             Statement statement = conn.createStatement();
             rs = statement.executeQuery("SELECT * FROM meeting_topic WHERE meeting_id = 1");
             while (rs.next()) {
-                Topic topic = topicDao.getTopicById(CONNECTION_URL, rs.getInt("topic_id"));
+                Topic topic = topicDao.getTopicById(conn, rs.getInt("topic_id"));
                 topics.add(topic);
             }
         } catch (SQLException e) {
@@ -57,23 +45,17 @@ public class MeetingTopicDao {
         return topics;
     }
 
-    public List<Topic> getMeetingsTopics(String connection, int meetingId) {
+    public List<Topic> getMeetingsTopics(Connection conn, int meetingId) {
         List<Topic> topics = new ArrayList<>();
         TopicDao topicDao = new TopicDao();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
         ResultSet rs;
 
         try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM meeting_topic WHERE meeting_id = ?");
             prepStat.setInt(1, meetingId);
             rs = prepStat.executeQuery();
             while (rs.next()) {
-                Topic topic = topicDao.getTopicById(CONNECTION_URL, rs.getInt("topic_id"));
+                Topic topic = topicDao.getTopicById(conn, rs.getInt("topic_id"));
                 topics.add(topic);
             }
         } catch (SQLException e) {
@@ -83,16 +65,8 @@ public class MeetingTopicDao {
         return topics;
     }
 
-    public void deleteMeetingAndTopicConnectivityById(String connection, int topicId, int meetingId) {
+    public void deleteMeetingAndTopicConnectivityById(Connection conn, int topicId, int meetingId) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-        ResultSet rs;
-
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("DELETE from meeting_topic where topic_id = ? and meeting_id = ?");
             prepStat.setInt(1, topicId);
             prepStat.setInt(2, meetingId);
@@ -103,15 +77,8 @@ public class MeetingTopicDao {
         }
     }
 
-    public void updateMeetingTopic(String connection, int oldTopicId, int newTopicId, int meetingId){
+    public void updateMeetingTopic(Connection conn, int oldTopicId, int newTopicId, int meetingId){
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
-
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement prepStat = conn.prepareStatement("UPDATE meeting_topic SET topic_id = ? WHERE meeting_id = ? AND topic_id = ?");
             prepStat.setInt(1, newTopicId);
             prepStat.setInt(2, meetingId);

@@ -11,7 +11,7 @@
     <title>Create location</title>
 </head>
 <body>
-<form action="createLocation" method="get">
+<form action="createLocation" method="post">
     <b>Country -> </b><input name="country"/><br/>
     <b>City -> </b><input name="city"/><br/>
     <b>Street -> </b><input name="street"/><br/>

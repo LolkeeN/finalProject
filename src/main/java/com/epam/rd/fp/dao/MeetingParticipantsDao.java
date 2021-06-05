@@ -13,18 +13,10 @@ import static java.sql.DriverManager.getConnection;
 public class MeetingParticipantsDao {
     private static final Logger log = LogManager.getLogger(RegisteredUsersDao.class);
 
-    public void addMeetingParticipant(String connection, int userId, int meetingId){
+    public void addMeetingParticipant(Connection conn, int userId, int meetingId){
         int rowcount = 0;
         ResultSet rs;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-
-
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM meeting_participants where meeting_id = ? AND user_id = ?");
             preparedStatement.setInt(1, meetingId);
             preparedStatement.setInt(2, userId);
@@ -46,18 +38,10 @@ public class MeetingParticipantsDao {
         }
     }
 
-    public int countMeetingParticipants(String connection, int meetingId){
+    public int countMeetingParticipants(Connection conn, int meetingId){
         int userCount = 0;
         ResultSet rs;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-
-
-        }
-        try {
-            Connection conn = getConnection(connection);
             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM meeting_participants where meeting_id = ?");
             preparedStatement.setInt(1, meetingId);
             rs = preparedStatement.executeQuery();

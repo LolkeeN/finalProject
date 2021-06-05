@@ -11,6 +11,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +31,17 @@ public class SpeakerMeetingsServlet extends HttpServlet {
         List<Topic> topics;
         String speakerEmail = (String) request.getSession().getAttribute("email");
         String speakerPassword = (String) request.getSession().getAttribute("password");
+
         try {
-            User speaker = userDao.getUser(CONNECTION_URL, speakerEmail, speakerPassword);
-            topics = topicSpeakerDao.getTopicIdBySpeakerId(CONNECTION_URL, speaker.getId());
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            User speaker = userDao.getUser(connection, speakerEmail, speakerPassword);
+            topics = topicSpeakerDao.getTopicIdBySpeakerId(connection, speaker.getId());
             request.getSession().setAttribute("first_name", speaker.getFirstName());
             request.getSession().setAttribute("last_name", speaker.getLastName());
             request.setAttribute("topics", topics);
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
+        }catch (IllegalArgumentException | SQLException | ClassNotFoundException e){
+            log.error(e.getMessage(), e);
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");

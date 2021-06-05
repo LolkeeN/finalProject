@@ -3,9 +3,12 @@ package com.epam.rd.fp.servlets;
 import com.epam.rd.fp.dao.LocationDao;
 import com.epam.rd.fp.dao.MeetingDao;
 import com.epam.rd.fp.dao.MeetingLocationDao;
+import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.Topic;
+import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Language;
+import com.epam.rd.fp.model.enums.Role;
 import com.epam.rd.fp.service.DBManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +17,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,12 @@ public class CreateMeetingServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         String name = request.getParameter("meeting_name");
         String date = request.getParameter("date");
@@ -45,11 +56,13 @@ public class CreateMeetingServlet extends HttpServlet {
         meeting.setDate(date);
         meeting.setLanguage(language);
         try {
-            meeting.setLocation(locationDao.getLocation(CONNECTION_URL, Integer.parseInt(location_id)));
-            meetingDao.insertMeeting(CONNECTION_URL, meeting);
-            meetingLocationDao.bindLocationIdWithMeetingId(CONNECTION_URL, Integer.parseInt(location_id), meeting.getId());
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            meeting.setLocation(locationDao.getLocation(connection, Integer.parseInt(location_id)));
+            meetingDao.insertMeeting(connection, meeting);
+            meetingLocationDao.bindLocationIdWithMeetingId(connection, Integer.parseInt(location_id), meeting.getId());
             request.setAttribute("meeting_name", meeting.getName());
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

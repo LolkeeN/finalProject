@@ -5,9 +5,9 @@
     <title>Meetings</title>
 </head>
 <body>
-<form action="login" method="get">
-    <input name="email" value="your email"/><br/>
-    <input type="password" name="password" /><br/>
+<form action="login" method="post">
+Your email -> <input name="email" /><br/>
+Your password-> <input type="password" name="password" /><br/>
     <input type="submit" value="Login"/>
 </form>
 

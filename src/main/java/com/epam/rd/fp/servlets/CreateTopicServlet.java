@@ -15,6 +15,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,6 +32,12 @@ public class CreateTopicServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         TopicDao topicDao = new TopicDao();
         DateFormat df = new SimpleDateFormat("dd.MM.yy");
@@ -52,22 +60,24 @@ public class CreateTopicServlet extends HttpServlet {
         topic.setDescription(description);
         topic.setLanguage(language);
         try {
-            Meeting meeting = meetingDao.getMeeting(CONNECTION_URL, request.getParameter("meeting_name"));
-            String dateStr = meeting.getDate();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            Meeting meeting = meetingDao.getMeeting(connection, request.getParameter("meeting_name"));
             String topicDateStr = topic.getDate();
+            String dateStr = meeting.getDate();
             Date meetingDate = df.parse(dateStr);
             Date topicDate = df.parse(topicDateStr);
             if (topicDate.getTime() == (meetingDate.getTime())) {
-                topicDao.insertTopic(CONNECTION_URL, topic);
-            }else{
+                topicDao.insertTopic(connection, topic);
+            } else {
                 throw new IllegalArgumentException("Topic date must be equals to meeting date");
             }
 
             List<Topic> topics = new ArrayList<>();
             topics.add(topic);
             meeting.setTopics(topics);
-            meetingTopicDao.bindTopicIdWithMeetingId(CONNECTION_URL, topic.getId(), meeting.getId());
-        }catch (IllegalArgumentException | ParseException e){
+            meetingTopicDao.bindTopicIdWithMeetingId(connection, topic.getId(), meeting.getId());
+        } catch (IllegalArgumentException | ParseException | SQLException | ClassNotFoundException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
