@@ -13,6 +13,13 @@ import static java.sql.DriverManager.getConnection;
 public class MeetingParticipantsDao {
     private static final Logger log = LogManager.getLogger(RegisteredUsersDao.class);
 
+    /**
+     * A method to add user as meeting participant
+     * @param conn your database connection
+     * @param userId id of user to be a participant
+     * @param meetingId id of meeting
+     * @throws IllegalArgumentException when adding a participant fails
+     */
     public void addMeetingParticipant(Connection conn, int userId, int meetingId){
         int rowcount = 0;
         ResultSet rs;
@@ -38,6 +45,13 @@ public class MeetingParticipantsDao {
         }
     }
 
+    /**
+     * A method to cont how many participants meeting has
+     * @param conn your database connection
+     * @param meetingId id of meeting to cont participants
+     * @return integer number of meeting's participants
+     * @throws IllegalArgumentException when cannot count meeting participants
+     */
     public int countMeetingParticipants(Connection conn, int meetingId){
         int userCount = 0;
         ResultSet rs;

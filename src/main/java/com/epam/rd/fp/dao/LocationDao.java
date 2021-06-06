@@ -20,6 +20,12 @@ public class LocationDao {
     private static final String GET_LOCATION_ID_BY_ITS_DATA = "SELECT  id from location where country = ? AND city = ? AND street = ? AND house = ? AND room = ?";
     private static final String GET_LOCATION_DATA_BY_ID = "SELECT * FROM location WHERE id = ?";
 
+    /**
+     * A method to insert a location into "location" table
+     * @param conn  your database connection
+     * @param location  a location to insert
+     * @throws IllegalArgumentException when insertion fails
+     */
     public void insertLocation(Connection conn, Location location) {
         ResultSet rs;
         try (PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)) {
@@ -49,6 +55,13 @@ public class LocationDao {
         }
     }
 
+    /**
+     * A method to get a location from "location" table by id
+     * @param conn your database connection
+     * @param id id of location you want to get
+     * @return a location with id you've entered
+     * @throws IllegalArgumentException when cannot get a location
+     */
     public Location getLocation(Connection conn, int id) {
         ResultSet rs;
         Location location = new Location();

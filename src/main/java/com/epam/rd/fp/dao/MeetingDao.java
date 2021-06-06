@@ -27,6 +27,12 @@ public class MeetingDao {
     private static final String SELECT_MEETING_DATA_BY_NAME = "SELECT * FROM meeting WHERE name = ? ";
     private static final String UPDATE_MEETING_DATE_BY_NAME = "UPDATE meeting SET date = ? WHERE name = ?";
 
+    /**
+     * A method to insert a meeting to "meeting" table
+     * @param conn your database connection
+     * @param meeting a meeting to insert
+     * @throws IllegalArgumentException when insertion fails
+     */
     public void insertMeeting(Connection conn, Meeting meeting) {
         ResultSet rs;
         DateFormat df = new SimpleDateFormat("dd.MM.yy");
@@ -61,6 +67,13 @@ public class MeetingDao {
         }
     }
 
+    /**
+     * A method to get meeting from "meeting" table by it's name
+     * @param conn your database connection
+     * @param name a name of meeting yo want to get
+     * @return a meeting with name you've entered
+     * @throws IllegalArgumentException when cannot get meeting
+     */
     public Meeting getMeeting(Connection conn, String name) {
         ResultSet rs;
         Meeting meeting = new Meeting();
@@ -85,6 +98,12 @@ public class MeetingDao {
         return meeting;
     }
 
+    /**
+     * A method to get all meetings from "meeting" table
+     * @param conn your database connection
+     * @return a list filled with meetings from table "meeting"
+     * @throws IllegalArgumentException when cannot get meetings
+     */
     public List<Meeting> getAllMeetings(Connection conn){
         List<Meeting> meetings = new ArrayList<>();
         try {
@@ -115,6 +134,13 @@ public class MeetingDao {
         return meetings;
     }
 
+    /**
+     * A method to change meeting's date
+     * @param conn your database connection
+     * @param name name of meeting which date you want to change
+     * @param date new meeting's date
+     * @throws IllegalArgumentException when cannot set meeting's date
+     */
     public void setMeetingDate(Connection conn, String name, String date){
         Meeting meeting = new Meeting();
         meeting.setName(name);

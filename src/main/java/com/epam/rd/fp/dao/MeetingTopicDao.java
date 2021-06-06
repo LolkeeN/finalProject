@@ -14,6 +14,13 @@ public class MeetingTopicDao {
     private static final Logger log = LogManager.getLogger(MeetingTopicDao.class);
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
+    /**
+     * A method to bind topic with meeting
+     * @param conn your database connection
+     * @param topicId id of topic to bind with meeting
+     * @param meetingId id of meeting to bind with topic
+     * @throws IllegalArgumentException when cannot bind topic with meeting
+     */
     public void bindTopicIdWithMeetingId(Connection conn, int topicId, int meetingId) {
         try {
             PreparedStatement prepStat = conn.prepareStatement("INSERT INTO meeting_topic (meeting_id, topic_id) values (?, ?)");
@@ -26,6 +33,12 @@ public class MeetingTopicDao {
         }
     }
 
+    /**
+     * A method to get topics that speaker suggested
+     * @param conn your database connection
+     * @return a list of topics
+     * @throws IllegalArgumentException when cannot get suggested topics
+     */
     public List<Topic> getSuggestedTopics(Connection conn) {
         List<Topic> topics = new ArrayList<>();
         TopicDao topicDao = new TopicDao();
@@ -45,6 +58,13 @@ public class MeetingTopicDao {
         return topics;
     }
 
+    /**
+     * A method to topics connected to meeting
+     * @param conn your database connection
+     * @param meetingId id of meeting to get connected topics
+     * @return a list of topics connected with meeting
+     * @throws IllegalArgumentException when cannot get meeting's topics
+     */
     public List<Topic> getMeetingsTopics(Connection conn, int meetingId) {
         List<Topic> topics = new ArrayList<>();
         TopicDao topicDao = new TopicDao();
@@ -65,6 +85,13 @@ public class MeetingTopicDao {
         return topics;
     }
 
+    /**
+     * A method to delete meeting and topic connectivity
+     * @param conn your database connection
+     * @param topicId id of topic to delete connection with meeting
+     * @param meetingId id of meeting to delete connection with topic
+     * @throws IllegalArgumentException when meeting and topic connectivity deletion fails
+     */
     public void deleteMeetingAndTopicConnectivityById(Connection conn, int topicId, int meetingId) {
         try {
             PreparedStatement prepStat = conn.prepareStatement("DELETE from meeting_topic where topic_id = ? and meeting_id = ?");
@@ -77,6 +104,14 @@ public class MeetingTopicDao {
         }
     }
 
+    /**
+     * A method to replace one meeting's topic with another
+     * @param conn your database connection
+     * @param oldTopicId id of topic to be replaced
+     * @param newTopicId id of new topic
+     * @param meetingId id of meeting which topic need to be updated
+     * @throws IllegalArgumentException when updating meeting topics fails
+     */
     public void updateMeetingTopic(Connection conn, int oldTopicId, int newTopicId, int meetingId){
         try {
             PreparedStatement prepStat = conn.prepareStatement("UPDATE meeting_topic SET topic_id = ? WHERE meeting_id = ? AND topic_id = ?");

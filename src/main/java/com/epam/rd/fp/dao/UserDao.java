@@ -19,6 +19,12 @@ public class UserDao {
     private static final String INSERT_VALUES_INTO_USER_TABLE = "INSERT into users (first_name,last_name, email, role, password) values (?, ?, ?,?, ?)";
     private static final String SELECT_USER_ID_BY_EMAIL = "SELECT  id from users where email = ?";
 
+    /**
+     * A method to insert user into "user" table
+     * @param conn your database connection
+     * @param user a user to be inserted
+     * @throws IllegalArgumentException when insertion fails
+     */
     public void insertUser(Connection conn, User user) {
         ResultSet rs;
         try (PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
@@ -44,6 +50,14 @@ public class UserDao {
         }
     }
 
+    /**
+     * A method to get user from "user" table by it's email and password
+     * @param conn your database connection
+     * @param email user's email
+     * @param password user's password
+     * @return user with email and password you've entered
+     * @throws IllegalArgumentException when cannot get user by email and password
+     */
     public User getUser(Connection conn, String email, String password) {
         ResultSet rs;
         User user = new User();
@@ -66,6 +80,13 @@ public class UserDao {
         return user;
     }
 
+    /**
+     * A method to get user from "user" table by it's id
+     * @param conn your database connection
+     * @param id user's id
+     * @return user with id you've entered
+     * @throws IllegalArgumentException when cannot get user by id
+     */
     public User getUser(Connection conn, int id) {
         User user = new User();
             ResultSet rs;
@@ -83,6 +104,12 @@ public class UserDao {
             return user;
     }
 
+    /**
+     * Private method to fill user's fields
+     * @param user a user
+     * @param rs result set
+     * @throws SQLException when filling fields fails
+     */
     private void fillUserFieldsFromDatabase(User user, ResultSet rs) throws SQLException {
         user.setId(rs.getInt("id"));
         user.setEmail(rs.getString("email"));

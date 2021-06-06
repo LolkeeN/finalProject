@@ -14,6 +14,13 @@ import static java.sql.DriverManager.getConnection;
 public class RegisteredUsersDao {
     private static final Logger log = LogManager.getLogger(RegisteredUsersDao.class);
 
+    /**
+     * A method to register user for a meeting
+     * @param conn your database connection
+     * @param userId id of user to be registered
+     * @param meetingId the id of the meeting the user is registering for
+     * @throws IllegalArgumentException when user registration for a meeting fails
+     */
     public void registerUserForAMeeting(Connection conn, int userId, int meetingId){
         int rowcount = 0;
         ResultSet rs;
@@ -39,6 +46,13 @@ public class RegisteredUsersDao {
         }
     }
 
+    /**
+     * A method to count how many users is registered for a meeting
+     * @param conn your database connection
+     * @param meetingId id of meeting to count registered users
+     * @return integer number of registered users
+     * @throws IllegalArgumentException when cannot count meeting's registered users
+     */
     public int countMeetingRegisteredUsers(Connection conn, int meetingId){
         int userCount = 0;
         ResultSet rs;
@@ -56,6 +70,14 @@ public class RegisteredUsersDao {
         }
     }
 
+    /**
+     * A method to check if user is registered for a meeting
+     * @param conn your database connection
+     * @param userId id of user to check registration
+     * @param meetingId id of meeting to check if user is registered
+     * @return true if user registered, false if user is not registered
+     * @throws IllegalArgumentException when cannot check topic for availability
+     */
     public boolean isRegistered(Connection conn, int userId, int meetingId){
         int rowcount = 0;
         ResultSet rs;

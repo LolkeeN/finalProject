@@ -12,7 +12,7 @@
 <%="Speaker page"%>
 <hr>
 <form action="speakerMeetings" method="get">
-    <input type="submit" value="get your meetings"/>
+    <input type="submit" value="get your topics"/>
 </form>
 <hr>
 <form action="getFreeTopics" method="get">
