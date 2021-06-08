@@ -61,7 +61,7 @@ public class MeetingDao {
                     meeting.setId(rs.getInt("id"));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             log.error("Cannot insert meeting into meeting table", e);
             throw new IllegalArgumentException("Cannot insert meeting into meeting table", e);
         }
@@ -106,11 +106,6 @@ public class MeetingDao {
      */
     public List<Meeting> getAllMeetings(Connection conn){
         List<Meeting> meetings = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            log.error("No suitable driver found", e);
-        }
         ResultSet rs;
         try {
             Statement statement = conn.createStatement();
@@ -142,6 +137,17 @@ public class MeetingDao {
      * @throws IllegalArgumentException when cannot set meeting's date
      */
     public void setMeetingDate(Connection conn, String name, String date){
+        DateFormat df = new SimpleDateFormat("dd.MM.yy");
+        Date meetingDate;
+        try {
+            meetingDate = df.parse(date);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid date format");
+        }
+        Date date1 = new Date();
+        if (date1.getTime() != (meetingDate.getTime())) {
+            throw new IllegalArgumentException("Cannot update meeting date with the date that has passed");
+        }
         Meeting meeting = new Meeting();
         meeting.setName(name);
         try {

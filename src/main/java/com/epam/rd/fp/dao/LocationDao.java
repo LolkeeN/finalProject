@@ -49,7 +49,7 @@ public class LocationDao {
                     location.setId(rs.getInt("id"));
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             log.error("Cannot insert location into location table", e);
             throw new IllegalArgumentException("Cannot insert location");
         }

@@ -22,7 +22,7 @@
 </form>
 <form action="getMeetingsTopics" method="get">
     <b>Choose meeting id change it's topic -> </b><input name="meeting_id"/><br/>
-    <input type="submit" value="get all meetings topics"/>
+    <input type="submit" value="get all meeting's topics"/>
 </form>
 <form action="sortMeetingsByParticipantsCount" method="get">
     <input type="submit" value="sort meetings by participants"/>

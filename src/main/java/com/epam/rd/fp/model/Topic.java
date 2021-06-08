@@ -2,6 +2,8 @@ package com.epam.rd.fp.model;
 
 import com.epam.rd.fp.model.enums.Language;
 
+import java.util.Objects;
+
 
 public class Topic{
     private int id;
@@ -86,5 +88,18 @@ public class Topic{
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Topic topic = (Topic) o;
+        return id == topic.id && availability == topic.availability && Objects.equals(name, topic.name) && Objects.equals(description, topic.description) && Objects.equals(speaker, topic.speaker) && Objects.equals(date, topic.date) && language == topic.language;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, speaker, date, language, availability);
     }
 }

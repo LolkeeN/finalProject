@@ -23,12 +23,13 @@ public class GetMeetingsTopicsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         boolean exceptionCaught = false;
-        int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
-        request.getSession().setAttribute("meeting_id", meetingId);
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
         List<Topic> topics;
 
+
         try {
+            int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
+            request.getSession().setAttribute("meeting_id", meetingId);
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(CONNECTION_URL);
             topics = meetingTopicDao.getMeetingsTopics(connection, meetingId);

@@ -1,6 +1,7 @@
 package daoTests;
 
 import com.epam.rd.fp.dao.MeetingDao;
+import com.epam.rd.fp.dao.MeetingLocationDao;
 import com.epam.rd.fp.dao.TopicDao;
 import com.epam.rd.fp.model.Location;
 import com.epam.rd.fp.model.Meeting;
@@ -15,6 +16,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MeetingDaoTest {
     private static final String CONNECTION_URL = "jdbc:h2:~/meetings";
@@ -57,7 +61,68 @@ public class MeetingDaoTest {
     }
 
     @Test
-    public void testUpdateMeetingDate(){
+    public void testExceptionThrownInInsertMeetingWhenDateHasPassed() throws SQLException {
+        MeetingDao meetingDao = new MeetingDao();
+        Connection connection = DriverManager.getConnection(CONNECTION_URL, "root", "myrootpass");
 
+        Meeting meeting = new Meeting();
+        meeting.setDate("01.01.01");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingDao.insertMeeting(connection, meeting));
+
+
+        String expectedMessage = "Cannot create meeting with the date that has passed";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
+
+    @Test
+    public void testExceptionThrownInInsertMeetingWhenDateFormatIsInvalid() throws SQLException {
+        MeetingDao meetingDao = new MeetingDao();
+        Connection connection = DriverManager.getConnection(CONNECTION_URL, "root", "myrootpass");
+
+        Meeting meeting = new Meeting();
+        meeting.setDate("01/01/01");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingDao.insertMeeting(connection, meeting));
+
+
+        String expectedMessage = "Invalid date format";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+    @Test
+    public void testExceptionThrownInInsertMeetingWhenFieldsAreNull() throws SQLException {
+        MeetingDao meetingDao = new MeetingDao();
+        Connection connection = DriverManager.getConnection(CONNECTION_URL, "root", "myrootpass");
+
+        Meeting meeting = meetingDao.getMeeting(connection, "123123123");
+        meeting.setDate("01.01.45");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingDao.insertMeeting(connection, meeting));
+
+
+        String expectedMessage = "Cannot create meeting with the date that has passed";
+        String actualMessage = exception.getMessage();
+
+        System.out.println(actualMessage);
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testExceptionThrownInSetMeetingDateWhenDateHasPassed() throws SQLException {
+        MeetingDao meetingDao = new MeetingDao();
+        Connection connection = DriverManager.getConnection(CONNECTION_URL, "root", "myrootpass");
+
+        Meeting meeting = new Meeting();
+        meeting.setDate("12.06.45");
+        String newDate = "01.01.01";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingDao.setMeetingDate(connection, "name", newDate));
+
+
+        String expectedMessage = "Cannot update meeting date with the date that has passed";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
 }

@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class MeetingLocationDaoTest {
     private static final String CONNECTION_URL = "jdbc:h2:~/meetings";
 
@@ -32,7 +35,7 @@ public class MeetingLocationDaoTest {
         PreparedStatement prepStat = connection.prepareStatement("select * from meeting_location where location_id = ?");
         prepStat.setInt(1, location.getId());
         ResultSet rs = prepStat.executeQuery();
-        while(rs.next()){
+        while (rs.next()) {
             providedMeetingId = rs.getInt("meeting_id");
         }
         return providedMeetingId;
@@ -63,4 +66,19 @@ public class MeetingLocationDaoTest {
         expectedMeetingId = getMeetingLocation(expectedMeetingId, connection, location1);
         Assertions.assertEquals(expectedMeetingId, providedMeetingId);
     }
+
+    @Test
+    public void testExceptionThrownInBindMeetingWithLocation() throws SQLException {
+        MeetingLocationDao meetingLocationDao = new MeetingLocationDao();
+        Connection connection = DriverManager.getConnection(CONNECTION_URL, "root", "myrootpass");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingLocationDao.bindLocationIdWithMeetingId(connection, 123123, 123123));
+
+
+        String expectedMessage = "Cannot bind location with meeting";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
 }

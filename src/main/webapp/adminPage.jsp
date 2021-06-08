@@ -17,7 +17,7 @@
 <hr>
 <a href="getAllMeetings"> Change topic by speaker </a>
 <hr>
-<a href="changeMeetingTimeAndPlacePage.jsp"> Change meeting time and place </a>
+<a href="changeMeetingTimeAndPlacePage.jsp"> Change meeting date and place </a>
 <hr>
 <a href="createLocation.jsp"> Create Location </a>
 <hr>

@@ -1,21 +1,19 @@
 package com.epam.rd.fp.servlets;
 
-import com.epam.rd.fp.dao.MeetingDao;
 import com.epam.rd.fp.dao.MeetingParticipantsDao;
 import com.epam.rd.fp.dao.RegisteredUsersDao;
-import com.epam.rd.fp.model.Meeting;
-import liquibase.pro.packaged.C;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
 @WebServlet(name = "GetMeetingRegisteredAndParticipantsCountServlet", value = "/getMeetingRegisteredAndParticipantsCount")
 public class GetMeetingRegisteredAndParticipantsCountServlet extends HttpServlet {
