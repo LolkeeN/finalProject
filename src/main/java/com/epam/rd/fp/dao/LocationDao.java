@@ -22,8 +22,9 @@ public class LocationDao {
 
     /**
      * A method to insert a location into "location" table
-     * @param conn  your database connection
-     * @param location  a location to insert
+     *
+     * @param conn     your database connection
+     * @param location a location to insert
      * @throws IllegalArgumentException when insertion fails
      */
     public void insertLocation(Connection conn, Location location) {
@@ -57,8 +58,9 @@ public class LocationDao {
 
     /**
      * A method to get a location from "location" table by id
+     *
      * @param conn your database connection
-     * @param id id of location you want to get
+     * @param id   id of location you want to get
      * @return a location with id you've entered
      * @throws IllegalArgumentException when cannot get a location
      */
@@ -66,8 +68,8 @@ public class LocationDao {
         ResultSet rs;
         Location location = new Location();
         location.setId(id);
-        try {
-            PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID);
+        try (PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID)
+        ) {
             prepStat.setInt(1, id);
             rs = prepStat.executeQuery();
             while (rs.next()) {
@@ -83,7 +85,7 @@ public class LocationDao {
                     location.setLanguage(Language.RU);
                 }
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Cannot get location from location table", e);
             throw new IllegalArgumentException("Cannot get location");
         }

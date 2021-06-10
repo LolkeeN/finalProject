@@ -21,6 +21,7 @@ public class UserDao {
 
     /**
      * A method to insert user into "user" table
+     *
      * @param conn your database connection
      * @param user a user to be inserted
      * @throws IllegalArgumentException when insertion fails
@@ -52,8 +53,9 @@ public class UserDao {
 
     /**
      * A method to get user from "user" table by it's email and password
-     * @param conn your database connection
-     * @param email user's email
+     *
+     * @param conn     your database connection
+     * @param email    user's email
      * @param password user's password
      * @return user with email and password you've entered
      * @throws IllegalArgumentException when cannot get user by email and password
@@ -64,8 +66,8 @@ public class UserDao {
         user.setEmail(email);
         user.setPassword(password);
 
-        try {
-            PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
+        try (PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
+        ) {
             prepStat.setString(1, email);
             prepStat.setString(2, password);
             rs = prepStat.executeQuery();
@@ -82,32 +84,34 @@ public class UserDao {
 
     /**
      * A method to get user from "user" table by it's id
+     *
      * @param conn your database connection
-     * @param id user's id
+     * @param id   user's id
      * @return user with id you've entered
      * @throws IllegalArgumentException when cannot get user by id
      */
     public User getUser(Connection conn, int id) {
         User user = new User();
-            ResultSet rs;
-            try {
-                PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
-                prepStat.setInt(1, id);
-                rs = prepStat.executeQuery();
-                while (rs.next()) {
-                    fillUserFieldsFromDatabase(user, rs);
-                }
-            }catch (SQLException e){
-                log.error("Cannot get user by id from user table", e);
-                throw new IllegalArgumentException("Cannot get user");
+        ResultSet rs;
+        try (PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+        ) {
+            prepStat.setInt(1, id);
+            rs = prepStat.executeQuery();
+            while (rs.next()) {
+                fillUserFieldsFromDatabase(user, rs);
             }
-            return user;
+        } catch (SQLException e) {
+            log.error("Cannot get user by id from user table", e);
+            throw new IllegalArgumentException("Cannot get user");
+        }
+        return user;
     }
 
     /**
      * Private method to fill user's fields
+     *
      * @param user a user
-     * @param rs result set
+     * @param rs   result set
      * @throws SQLException when filling fields fails
      */
     private void fillUserFieldsFromDatabase(User user, ResultSet rs) throws SQLException {

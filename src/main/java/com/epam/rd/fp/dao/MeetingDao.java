@@ -29,7 +29,8 @@ public class MeetingDao {
 
     /**
      * A method to insert a meeting to "meeting" table
-     * @param conn your database connection
+     *
+     * @param conn    your database connection
      * @param meeting a meeting to insert
      * @throws IllegalArgumentException when insertion fails
      */
@@ -43,7 +44,7 @@ public class MeetingDao {
             throw new IllegalArgumentException("Invalid date format");
         }
         Date date = new Date();
-        if (date.getTime() != (meetingDate.getTime())) {
+        if (date.getTime() > (meetingDate.getTime())) {
             throw new IllegalArgumentException("Cannot create meeting with the date that has passed");
         }
 
@@ -69,6 +70,7 @@ public class MeetingDao {
 
     /**
      * A method to get meeting from "meeting" table by it's name
+     *
      * @param conn your database connection
      * @param name a name of meeting yo want to get
      * @return a meeting with name you've entered
@@ -78,8 +80,7 @@ public class MeetingDao {
         ResultSet rs;
         Meeting meeting = new Meeting();
         meeting.setName(name);
-        try {
-            PreparedStatement prepStat = conn.prepareStatement(SELECT_MEETING_DATA_BY_NAME);
+        try (PreparedStatement prepStat = conn.prepareStatement(SELECT_MEETING_DATA_BY_NAME)) {
             prepStat.setString(1, name);
             rs = prepStat.executeQuery();
             while (rs.next()) {
@@ -91,7 +92,7 @@ public class MeetingDao {
                     meeting.setLanguage(Language.RU);
                 }
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Cannot get meeting from meeting table", e);
             throw new IllegalArgumentException("Cannot get meeting from meeting table");
         }
@@ -100,29 +101,29 @@ public class MeetingDao {
 
     /**
      * A method to get all meetings from "meeting" table
+     *
      * @param conn your database connection
      * @return a list filled with meetings from table "meeting"
      * @throws IllegalArgumentException when cannot get meetings
      */
-    public List<Meeting> getAllMeetings(Connection conn){
+    public List<Meeting> getAllMeetings(Connection conn) {
         List<Meeting> meetings = new ArrayList<>();
         ResultSet rs;
-        try {
-            Statement statement = conn.createStatement();
+        try (Statement statement = conn.createStatement()) {
             rs = statement.executeQuery("SELECT * FROM meeting where id != 1");
             while (rs.next()) {
                 Meeting meeting = new Meeting();
                 meeting.setId(rs.getInt("id"));
                 meeting.setName(rs.getString("name"));
                 meeting.setDate(rs.getString("date"));
-                if ("EN".equals(rs.getString("language"))){
+                if ("EN".equals(rs.getString("language"))) {
                     meeting.setLanguage(Language.EN);
-                }else{
+                } else {
                     meeting.setLanguage(Language.RU);
                 }
                 meetings.add(meeting);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Cannot get all meetings", e);
             throw new IllegalArgumentException("Cannot get all meetings");
         }
@@ -131,12 +132,13 @@ public class MeetingDao {
 
     /**
      * A method to change meeting's date
+     *
      * @param conn your database connection
      * @param name name of meeting which date you want to change
      * @param date new meeting's date
      * @throws IllegalArgumentException when cannot set meeting's date
      */
-    public void setMeetingDate(Connection conn, String name, String date){
+    public void setMeetingDate(Connection conn, String name, String date) {
         DateFormat df = new SimpleDateFormat("dd.MM.yy");
         Date meetingDate;
         try {
@@ -150,12 +152,12 @@ public class MeetingDao {
         }
         Meeting meeting = new Meeting();
         meeting.setName(name);
-        try {
-            PreparedStatement prepStat = conn.prepareStatement(UPDATE_MEETING_DATE_BY_NAME);
+        try (PreparedStatement prepStat = conn.prepareStatement(UPDATE_MEETING_DATE_BY_NAME);
+        ) {
             prepStat.setString(1, date);
             prepStat.setString(2, name);
             prepStat.execute();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Cannot update meeting's date", e);
             throw new IllegalArgumentException("Cannot update meeting's date");
         }
