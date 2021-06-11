@@ -28,8 +28,8 @@ public class MeetingRegistrationServlet extends HttpServlet {
         boolean exceptionCaught = false;
         RegisteredUsersDao registeredUsersDao = new RegisteredUsersDao();
         int userId = (int) request.getSession().getAttribute("id");
-        int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
         try {
+            int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(CONNECTION_URL);
             registeredUsersDao.registerUserForAMeeting(connection, userId, meetingId);

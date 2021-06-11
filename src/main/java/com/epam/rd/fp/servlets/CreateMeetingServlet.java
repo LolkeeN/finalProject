@@ -3,25 +3,20 @@ package com.epam.rd.fp.servlets;
 import com.epam.rd.fp.dao.LocationDao;
 import com.epam.rd.fp.dao.MeetingDao;
 import com.epam.rd.fp.dao.MeetingLocationDao;
-import com.epam.rd.fp.dao.UserDao;
 import com.epam.rd.fp.model.Meeting;
-import com.epam.rd.fp.model.Topic;
-import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Language;
-import com.epam.rd.fp.model.enums.Role;
-import com.epam.rd.fp.service.DBManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet(name = "CreateMeetingServlet", value = "/createMeeting")
 public class CreateMeetingServlet extends HttpServlet {
@@ -41,9 +36,9 @@ public class CreateMeetingServlet extends HttpServlet {
         String date = request.getParameter("date");
         String location_id = request.getParameter("location_id");
         Language language;
-        if ("EN".equalsIgnoreCase(request.getParameter("language"))){
+        if ("EN".equalsIgnoreCase(request.getParameter("language"))) {
             language = Language.EN;
-        }else{
+        } else {
             language = Language.RU;
         }
 
@@ -62,7 +57,12 @@ public class CreateMeetingServlet extends HttpServlet {
             meetingDao.insertMeeting(connection, meeting);
             meetingLocationDao.bindLocationIdWithMeetingId(connection, Integer.parseInt(location_id), meeting.getId());
             request.setAttribute("meeting_name", meeting.getName());
-        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage());
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", "Wrong data input format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        } catch (IllegalArgumentException | ClassNotFoundException | SQLException | NullPointerException e) {
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

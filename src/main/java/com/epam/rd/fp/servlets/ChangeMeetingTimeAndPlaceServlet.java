@@ -22,11 +22,6 @@ public class ChangeMeetingTimeAndPlaceServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(ChangeMeetingTimeAndPlaceServlet.class);
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-    }
-
-    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;

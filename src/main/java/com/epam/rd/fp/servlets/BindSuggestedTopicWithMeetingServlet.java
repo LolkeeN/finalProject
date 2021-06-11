@@ -33,10 +33,10 @@ public class BindSuggestedTopicWithMeetingServlet extends HttpServlet {
         TopicDao topicDao = new TopicDao();
         MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
 
-        int topicId = Integer.parseInt(request.getParameter("topic_id"));
         String meetingName = request.getParameter("meeting_name");
 
         try {
+            int topicId = Integer.parseInt(request.getParameter("topic_id"));
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(CONNECTION_URL);
             Topic topic = topicDao.getTopicById(connection, topicId);

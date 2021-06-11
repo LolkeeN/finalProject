@@ -128,4 +128,21 @@ public class UserDao {
             user.setRole(Role.SPEAKER);
         }
     }
+
+    public boolean isAlreadyRegistered(Connection conn, String email){
+        int userCount = 0;
+        ResultSet rs;
+        try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");
+        ) {
+            preparedStatement.setString(1, email);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                userCount = rs.getInt("userCount");
+            }
+            return userCount == 1;
+        } catch (SQLException e) {
+            log.error("Cannot check user's registration", e);
+            throw new IllegalArgumentException("Cannot check user's registration");
+        }
+    }
 }

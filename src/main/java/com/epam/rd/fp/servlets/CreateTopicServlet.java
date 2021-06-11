@@ -77,10 +77,20 @@ public class CreateTopicServlet extends HttpServlet {
             topics.add(topic);
             meeting.setTopics(topics);
             meetingTopicDao.bindTopicIdWithMeetingId(connection, topic.getId(), meeting.getId());
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage(),e);
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", "Wrong data input format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
         } catch (IllegalArgumentException | ParseException | SQLException | ClassNotFoundException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(),e);
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+        }catch (NullPointerException e){
+            log.error(e.getMessage(), e);
+            exceptionCaught = true;
+            request.getSession().setAttribute("errorMessage", "Some input field are null");
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
         }
         if (!exceptionCaught) {

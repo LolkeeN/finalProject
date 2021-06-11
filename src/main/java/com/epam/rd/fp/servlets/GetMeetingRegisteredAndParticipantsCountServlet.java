@@ -27,10 +27,10 @@ public class GetMeetingRegisteredAndParticipantsCountServlet extends HttpServlet
         RegisteredUsersDao registeredUsersDao = new RegisteredUsersDao();
         int participantsCount;
         int registeredCount;
-        int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+            int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
             Connection connection = DriverManager.getConnection(CONNECTION_URL);
             participantsCount = meetingParticipantsDao.countMeetingParticipants(connection, meetingId);
             registeredCount = registeredUsersDao.countMeetingRegisteredUsers(connection, meetingId);

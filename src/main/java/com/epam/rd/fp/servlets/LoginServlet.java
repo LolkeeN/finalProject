@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             request.getSession().setAttribute("password", user.getPassword());
             request.getSession().setAttribute("id", user.getId());
             request.setAttribute("id", user.getId());
-        }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
+        }catch (IllegalArgumentException | ClassNotFoundException | SQLException | IllegalStateException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());

@@ -11,6 +11,8 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -25,6 +27,7 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        UserDao userDao = new UserDao();
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -38,43 +41,80 @@ public class RegistrationServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         String roleValue = request.getParameter("role");
         roleValue = roleValue.toLowerCase();
-        Role role;
-        switch (roleValue) {
-            case "user":
-                role = Role.USER;
-                break;
-            case "speaker":
-                role = Role.SPEAKER;
-                break;
-            case "specialkeyforadminrole":
-                role = Role.MODERATOR;
-                break;
-            case "":
-                log.info("Role hasn't been chosen");
-                throw new IllegalArgumentException("You've't chosen a role");
-            default:
-                throw new IllegalStateException("Unexpected value: " + roleValue);
-        }
-        User user = new User(firstName, lastName, password, email, role);
-        UserDao userDao = new UserDao();
+
+        List<String> parameterList = new ArrayList<>();
+        parameterList.add(email);
+        parameterList.add(password);
+        parameterList.add(firstName);
+        parameterList.add(lastName);
+        parameterList.add(roleValue);
+        exceptionCaught = checkForEmptyFields(request, response, exceptionCaught, parameterList);
+
+        Role role = null;
         try {
-            Connection connection = DriverManager.getConnection(CONNECTION_URL);
-            userDao.insertUser(connection, user);
-            request.getSession().setAttribute("first_name", user.getFirstName());
-            request.getSession().setAttribute("last_name", user.getLastName());
-            request.getSession().setAttribute("id", user.getId());
-//                request.setAttribute("id", user.getId());
-            request.getSession().setAttribute("email", user.getEmail());
-            request.getSession().setAttribute("role", user.getRole().getValue());
-        } catch (IllegalArgumentException | SQLException e) {
+            switch (roleValue) {
+                case "user":
+                    role = Role.USER;
+                    break;
+                case "speaker":
+                    role = Role.SPEAKER;
+                    break;
+                case "specialkeyforadminrole":
+                    role = Role.MODERATOR;
+                    break;
+                case "":
+                    log.info("Role hasn't been chosen");
+                    throw new IllegalArgumentException("You've't chosen a role");
+                default:
+                    throw new IllegalStateException("Unexpected value: " + roleValue);
+            }
+        }catch (IllegalArgumentException | IllegalStateException e){
             log.error(e.getMessage());
             exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
         }
         if (!exceptionCaught) {
-            checkRoleAndRedirect(request, response, user);
+            User user = new User(firstName, lastName, password, email, role);
+            try {
+                Connection connection = DriverManager.getConnection(CONNECTION_URL);
+                boolean isRegistered = userDao.isAlreadyRegistered(connection, user.getEmail());
+                if (isRegistered){
+                    log.error("user's already registered");
+                    exceptionCaught = true;
+                    request.getSession().setAttribute("errorMessage", "User's already registered");
+                    response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+                }else {
+                    userDao.insertUser(connection, user);
+                    request.getSession().setAttribute("first_name", user.getFirstName());
+                    request.getSession().setAttribute("last_name", user.getLastName());
+                    request.getSession().setAttribute("id", user.getId());
+                    request.getSession().setAttribute("email", user.getEmail());
+                    request.getSession().setAttribute("role", user.getRole().getValue());
+                }
+            } catch (IllegalArgumentException | SQLException e) {
+                log.error(e.getMessage());
+                exceptionCaught = true;
+                request.getSession().setAttribute("errorMessage", e.getMessage());
+                response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            }
+            if (!exceptionCaught) {
+                checkRoleAndRedirect(request, response, user);
+            }
         }
+    }
+
+    private boolean checkForEmptyFields(HttpServletRequest request, HttpServletResponse response, boolean exceptionCaught, List<String> parameterList) throws IOException {
+        for (String elem: parameterList) {
+            if (elem.equals("")){
+                if (!exceptionCaught) {
+                    exceptionCaught = true;
+                    request.getSession().setAttribute("errorMessage", "Some fields are empty");
+                    response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+                }
+            }
+        }
+        return exceptionCaught;
     }
 
     static void checkRoleAndRedirect(HttpServletRequest request, HttpServletResponse response, User user) throws ServletException, IOException {

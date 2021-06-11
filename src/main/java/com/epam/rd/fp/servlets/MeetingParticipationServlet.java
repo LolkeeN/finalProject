@@ -19,19 +19,14 @@ public class MeetingParticipationServlet extends HttpServlet {
     private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         RegisteredUsersDao registeredUsersDao = new RegisteredUsersDao();
         MeetingParticipantsDao meetingParticipantsDao = new MeetingParticipantsDao();
         int userId = (int) request.getSession().getAttribute("id");
-        int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
         try {
+            int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(CONNECTION_URL);
             if (registeredUsersDao.isRegistered(connection, userId, meetingId)) {
