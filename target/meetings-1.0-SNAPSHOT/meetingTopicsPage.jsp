@@ -36,6 +36,8 @@
     </nav>
 </div>
 <br/>
+
+<div class="container-fluid">
 <jsp:useBean id="topics" scope="request" type="java.util.List"/>
 <c:forEach var="topic" items="${topics}">
     ${topic.id} |
@@ -44,6 +46,7 @@
     ${topic.language} |
     <br/><br/>
 </c:forEach>
+</div>
 <div class="container-fluid">
 <form action="getAllSpeakerTopics" method="get">
     <b>Choose topic id to replace -> </b><input name="topic_id"/><br/><br/>

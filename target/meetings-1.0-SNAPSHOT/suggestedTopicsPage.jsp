@@ -33,6 +33,8 @@
             </div>
         </div>
     </nav>
+
+    <div class="container-fluid">
 </div>
 <br/>
 <jsp:useBean id="suggestedTopics" scope="request" type="java.util.List"/>
@@ -43,6 +45,7 @@
     ${topic.description} |
     <br/>
 </c:forEach>
+</div>
 <div class="container-fluid">
 
 <form action="bindSuggestedTopicWithMeeting" method="post">

@@ -35,6 +35,8 @@
     </nav>
 </div>
 <br/>
+<div class="container-fluid">
+
 <jsp:useBean id="freeTopics" scope="request" type="java.util.List"/>
 <c:forEach var="topic" items="${freeTopics}">
     ${topic.id} |
@@ -43,6 +45,7 @@
     ${topic.description} |
     <br/>
 </c:forEach>
+</div>
 </body>
 <div class="container-fluid">
 <form action="bindFreeTopic" method="post">

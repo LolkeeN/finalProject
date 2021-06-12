@@ -5,6 +5,7 @@ import com.epam.rd.fp.dao.MeetingDao;
 import com.epam.rd.fp.dao.MeetingLocationDao;
 import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.enums.Language;
+import com.epam.rd.fp.service.DBManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +43,7 @@ public class CreateMeetingServlet extends HttpServlet {
             language = Language.RU;
         }
 
-        LocationDao locationDao = new LocationDao();
+        LocationDao locationDao = new LocationDao(DBManager.getInstance());
         MeetingDao meetingDao = new MeetingDao();
         MeetingLocationDao meetingLocationDao = new MeetingLocationDao();
 

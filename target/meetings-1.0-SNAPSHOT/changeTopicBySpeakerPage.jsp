@@ -34,6 +34,8 @@
         </div>
     </nav>
 </div>
+<div class="container-fluid">
+
 <br/>
 <jsp:useBean id="topics" scope="request" type="java.util.List"/>
 <c:forEach var="topic" items="${topics}">
@@ -42,7 +44,8 @@
     ${topic.date} |
     ${topic.language} |
     <br/>
-</c:forEach>
+    </c:forEach>
+</div>
 <div class="container-fluid">
 <form action="changeTopicBySpeaker" method="post">
     <b>Choose new topic id -> </b><input name="topic_id"/><br/>

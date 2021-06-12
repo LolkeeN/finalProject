@@ -41,11 +41,11 @@
         </div>
     </nav>
 </div>
-<br/>
-ACCESS DENIED!
-<br/>
 <div class="container-fluid">
-<form action="loginPage.jsp">
+    <br/>
+    ACCESS DENIED!
+    <br/>
+    <form action="loginPage.jsp">
     <button type="submit" class="btn btn-secondary">Go back</button>
 </form>
     </div>

@@ -50,8 +50,12 @@ public class RegistrationServlet extends HttpServlet {
         parameterList.add(roleValue);
         exceptionCaught = checkForEmptyFields(request, response, exceptionCaught, parameterList);
 
+
         Role role = null;
         try {
+            if (!email.contains("@") && !email.contains(".")){
+                throw new IllegalArgumentException("Wrong email format");
+            }
             switch (roleValue) {
                 case "user":
                     role = Role.USER;

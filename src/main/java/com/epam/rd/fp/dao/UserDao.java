@@ -129,7 +129,7 @@ public class UserDao {
         }
     }
 
-    public boolean isAlreadyRegistered(Connection conn, String email){
+    public boolean isAlreadyRegistered(Connection conn, String email) {
         int userCount = 0;
         ResultSet rs;
         try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");

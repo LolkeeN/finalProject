@@ -37,6 +37,8 @@
     </nav>
 </div>
 <br/>
+<div class="container-fluid">
+
 Current Date and Time is: <m:today/>
 <br>
 <br>
@@ -46,7 +48,7 @@ Current Date and Time is: <m:today/>
     ${topic.date}
     <br/>
 </c:forEach>
-
+</div>
 <div class="container-fluid">
 
 <form action="CheckRoleAndRedirectServlet">

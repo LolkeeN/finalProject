@@ -1,7 +1,7 @@
 package com.epam.rd.fp.model.enums;
 
 public enum Language {
-    RU ("ru"),
+    RU("ru"),
     EN("en");
     private String value;
 
@@ -11,5 +11,12 @@ public enum Language {
 
     public String getValue() {
         return value;
+    }
+
+    public static Language fromString(String language){
+            if ("EN".equalsIgnoreCase(language)) {
+                return Language.EN;
+            }
+            return Language.RU;
     }
 }

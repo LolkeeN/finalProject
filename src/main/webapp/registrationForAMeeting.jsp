@@ -36,6 +36,8 @@
     </nav>
 </div>
 <br/>
+<div class="container-fluid">
+
 <jsp:useBean id="meetings" scope="request" type="java.util.List"/>
 <c:forEach var="meeting" items="${meetings}">
     ${meeting.id} |
@@ -44,6 +46,7 @@
     ${meeting.language} |
     <br/>
 </c:forEach>
+</div>
 <div class="container-fluid">
 <form action="meetingRegistration" method="post">
     <b>Choose meeting id for registration -> </b><input name="meeting_id"/><br/><br/>

@@ -38,7 +38,7 @@ public class MeetingLocationDao {
     /**
      * A method to change meeting's location
      *
-     * @param conn your database connection
+     * @param conn       your database connection
      * @param meetingId  id of meeting which location needs to be changed
      * @param locationId id of new location
      * @throws IllegalArgumentException when cannot set meeting's location

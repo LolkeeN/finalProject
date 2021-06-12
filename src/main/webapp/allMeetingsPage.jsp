@@ -35,6 +35,8 @@
         </div>
     </nav>
 </div>
+<div class="container-fluid">
+
 <br/>
 <jsp:useBean id="meetings" scope="request" type="java.util.List"/>
 <c:forEach var="meeting" items="${meetings}">
@@ -45,7 +47,8 @@
     regis ${meeting.registeredUsers} |
     partis ${meeting.participantsCount} |
     <br/>
-</c:forEach>
+    </c:forEach>
+</div>
 <div class="container-fluid">
 <form action="getMeetingRegisteredAndParticipantsCount" method="get">
     <b>Choose meeting id to get registered and participant users count -> </b><input name="meeting_id"/><br/>

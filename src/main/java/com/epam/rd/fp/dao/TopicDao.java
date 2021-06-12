@@ -149,4 +149,5 @@ public class TopicDao {
             throw new IllegalArgumentException("Cannot change topic's availability");
         }
     }
+
 }

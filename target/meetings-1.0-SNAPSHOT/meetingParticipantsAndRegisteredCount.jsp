@@ -34,9 +34,12 @@
     </nav>
 </div>
 <br/>
+<div class="container-fluid">
+
 Meeting № <%=request.getParameter("meeting_id")%> participants count <%=request.getSession().getAttribute("participants_count")%>
 <br/><br/>
 Meeting № <%=request.getParameter("meeting_id")%> registered count <%=request.getSession().getAttribute("registered_count")%>
+</div>
 <div class="container-fluid">
 <form action="CheckRoleAndRedirectServlet">
     <button type="submit" class="btn btn-secondary">Go back</button>

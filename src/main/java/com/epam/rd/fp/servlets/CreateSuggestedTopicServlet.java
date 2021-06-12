@@ -25,16 +25,51 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
     private static final Logger log = LogManager.getLogger(CreateSuggestedTopicServlet.class);
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         boolean exceptionCaught = false;
         try {
-            createTopicAndBindWithMeeting(request);
+            TopicDao topicDao = new TopicDao();
+            MeetingDao meetingDao = new MeetingDao();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(CONNECTION_URL);
+            List<String> parameterList = new ArrayList<>();
+            MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
+
+            String name = request.getParameter("name");
+            String date = request.getParameter("date");
+            String description = request.getParameter("description");
+            Language language;
+            if ("EN".equalsIgnoreCase(request.getParameter("language"))) {
+                language = Language.EN;
+            } else {
+                language = Language.RU;
+            }
+
+            parameterList.add(name);
+            parameterList.add(date);
+            parameterList.add(description);
+            parameterList.add(language.toString());
+
+            for (String elem:parameterList) {
+                if (elem.equals("")){
+                    throw new IllegalArgumentException("Some fields are null");
+                }
+            }
+            Topic topic = new Topic();
+            topic.setName(name);
+            topic.setDate(date);
+            topic.setDescription(description);
+            topic.setLanguage(language);
+            topicDao.insertTopic(connection, topic);
+            topicDao.updateTopicAvailability(connection, topic, false);
+
+
+            Meeting meeting = meetingDao.getMeeting(connection, request.getParameter("meeting_name"));
+            List<Topic> topics = new ArrayList<>();
+            topics.add(topic);
+            meeting.setTopics(topics);
+            meetingTopicDao.bindTopicIdWithMeetingId(connection, topic.getId(), meeting.getId());
         }catch (IllegalArgumentException | ClassNotFoundException | SQLException e){
             log.error(e.getMessage());
             exceptionCaught = true;
@@ -46,36 +81,7 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
         }
     }
 
-    static void createTopicAndBindWithMeeting(HttpServletRequest request) throws ClassNotFoundException, SQLException {
-        TopicDao topicDao = new TopicDao();
-        MeetingDao meetingDao = new MeetingDao();
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection(CONNECTION_URL);
-        MeetingTopicDao meetingTopicDao = new MeetingTopicDao();
-
-        String name = request.getParameter("name");
-        String date = request.getParameter("date");
-        String description = request.getParameter("description");
-        Language language;
-        if ("EN".equalsIgnoreCase(request.getParameter("language"))) {
-            language = Language.EN;
-        } else {
-            language = Language.RU;
-        }
-
-        Topic topic = new Topic();
-        topic.setName(name);
-        topic.setDate(date);
-        topic.setDescription(description);
-        topic.setLanguage(language);
-        topicDao.insertTopic(connection, topic);
-        topicDao.updateTopicAvailability(connection, topic, false);
-
-
-        Meeting meeting = meetingDao.getMeeting(connection, request.getParameter("meeting_name"));
-        List<Topic> topics = new ArrayList<>();
-        topics.add(topic);
-        meeting.setTopics(topics);
-        meetingTopicDao.bindTopicIdWithMeetingId(connection, topic.getId(), meeting.getId());
-    }
+//    static void createTopicAndBindWithMeeting(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, SQLException, IOException {
+//
+//    }
 }
