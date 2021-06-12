@@ -1,53 +1,47 @@
 package com.epam.rd.fp.servlets;
 
-import com.epam.rd.fp.dao.TopicSpeakerDao;
-import com.epam.rd.fp.dao.UserDao;
+import com.epam.rd.fp.factory.ServiceFactory;
+import com.epam.rd.fp.factory.impl.ServiceFactoryImpl;
 import com.epam.rd.fp.model.Topic;
 import com.epam.rd.fp.model.User;
+import com.epam.rd.fp.service.TopicService;
+import com.epam.rd.fp.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "SpeakerMeetingsServlet", value = "/speakerMeetings")
 public class SpeakerMeetingsServlet extends HttpServlet {
+    private final ServiceFactory serviceFactory = new ServiceFactoryImpl();
+    private final UserService userService = serviceFactory.getUserService();
+    private final TopicService topicService = serviceFactory.getTopicService();
     private static final Logger log = LogManager.getLogger(SpeakerMeetingsServlet.class);
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean exceptionCaught = false;
-        TopicSpeakerDao topicSpeakerDao = new TopicSpeakerDao();
-        UserDao userDao = new UserDao();
-
         List<Topic> topics;
         String speakerEmail = (String) request.getSession().getAttribute("email");
         String speakerPassword = (String) request.getSession().getAttribute("password");
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(CONNECTION_URL);
-            User speaker = userDao.getUser(connection, speakerEmail, speakerPassword);
-            topics = topicSpeakerDao.getTopicIdBySpeakerId(connection, speaker.getId());
+            User speaker = userService.getUser(speakerEmail, speakerPassword);
+            topics = topicService.getTopicIdBySpeakerId(speaker.getId());
             request.getSession().setAttribute("first_name", speaker.getFirstName());
             request.getSession().setAttribute("last_name", speaker.getLastName());
             request.setAttribute("topics", topics);
-        }catch (IllegalArgumentException | SQLException | ClassNotFoundException e){
+        }catch (IllegalArgumentException e){
             log.error(e.getMessage(), e);
-            exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
         }
-        if (!exceptionCaught) {
             request.getRequestDispatcher("speakerMeetings.jsp").forward(request, response);
-        }
     }
 }

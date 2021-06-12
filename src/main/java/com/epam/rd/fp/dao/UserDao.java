@@ -4,6 +4,7 @@ import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.model.enums.Role;
 import com.epam.rd.fp.service.DBManager;
+import jdk.nashorn.internal.ir.CallNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -193,10 +194,11 @@ public class UserDao {
      * @param meetingId the id of the meeting the user is registering for
      * @throws IllegalArgumentException when user registration for a meeting fails
      */
-    public void registerUserForAMeeting(Connection conn, int userId, int meetingId) {
+    public void registerUserForAMeeting(int userId, int meetingId) {
         int rowcount = 0;
         ResultSet rs;
-        try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
+        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+                PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
         ) {
             preparedStatement.setInt(1, meetingId);
             preparedStatement.setInt(2, userId);
@@ -229,11 +231,12 @@ public class UserDao {
      * @return true if user registered, false if user is not registered
      * @throws IllegalArgumentException when cannot check topic for availability
      */
-    public boolean isRegistered(Connection conn, int userId, int meetingId) {
+    public boolean isRegistered(int userId, int meetingId) {
         int rowcount = 0;
         ResultSet rs;
         try {
-            try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
+            try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+                    PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
                 preparedStatement.setInt(1, meetingId);
                 preparedStatement.setInt(2, userId);
                 rs = preparedStatement.executeQuery();

@@ -1,26 +1,16 @@
 package com.epam.rd.fp.service;
 
 import com.epam.rd.fp.dao.TopicDao;
-import com.epam.rd.fp.model.Location;
-import com.epam.rd.fp.model.Meeting;
-import com.epam.rd.fp.model.Topic;
-import com.epam.rd.fp.model.User;
-import com.epam.rd.fp.model.enums.Role;
+import com.epam.rd.fp.model.*;
+import com.epam.rd.fp.util.PropertyProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 public class DBManager {
     private static final Logger log = LogManager.getLogger(TopicDao.class);
     private static final DBManager dbManager = new DBManager();
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     private DBManager() {
         try {
@@ -34,8 +24,9 @@ public class DBManager {
         return dbManager;
     }
 
-    public Connection getConnection(String conn) throws SQLException {
-        return DriverManager.getConnection(conn);
+    public Connection getConnection() throws SQLException {
+       DatabaseProperties databaseProperties = PropertyProvider.getDatabaseProperties();
+        return DriverManager.getConnection(databaseProperties.getUrl(), databaseProperties.getUser(), databaseProperties.getPassword());
     }
 
 

@@ -76,4 +76,26 @@ public class MeetingServiceImpl implements MeetingService {
     public int countMeetingRegisteredUsers(int meetingId) {
         return meetingDao.countMeetingRegisteredUsers(meetingId);
     }
+
+    @Override
+    public List<Topic> getMeetingsTopics(int meetingId) {
+        return meetingDao.getMeetingsTopics(meetingId);
+    }
+
+    @Override
+    public void addMeetingParticipant(int userId, int meetingId) {
+        meetingDao.addMeetingParticipant(userId, meetingId);
+    }
+
+    @Override
+    public void setMeetingDate(int id, String newDate) {
+        meetingDao.setMeetingDate(id, newDate);
+    }
+
+    @Override
+    public void bindLocationIdWithMeetingId(int locationId, int meetingId) {
+        meetingDao.bindLocationIdWithMeetingId(locationId, meetingId);
+    }
+
+
 }

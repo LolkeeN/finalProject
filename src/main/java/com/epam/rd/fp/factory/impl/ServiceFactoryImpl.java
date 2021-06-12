@@ -6,11 +6,17 @@ import com.epam.rd.fp.service.LocationService;
 import com.epam.rd.fp.service.MeetingService;
 import com.epam.rd.fp.service.TopicService;
 import com.epam.rd.fp.service.UserService;
+import com.epam.rd.fp.service.impl.LocationServiceImpl;
 import com.epam.rd.fp.service.impl.MeetingServiceImpl;
+import com.epam.rd.fp.service.impl.TopicServiceImpl;
+import com.epam.rd.fp.service.impl.UserServiceImpl;
 
 public class ServiceFactoryImpl implements ServiceFactory {
     DaoFactory daoFactory = new DaoFactoryImpl();
     MeetingService meetingService;
+    LocationService locationService;
+    UserService userService;
+    TopicService topicService;
 
     @Override
     public MeetingService getMeetingService() {
@@ -24,17 +30,32 @@ public class ServiceFactoryImpl implements ServiceFactory {
 
     @Override
     public LocationService getLocationService() {
-        return null;
+        synchronized (this) {
+            if ( locationService == null) {
+                locationService = new LocationServiceImpl(daoFactory.getLocationDao());
+            }
+        }
+        return locationService;
     }
 
     @Override
     public TopicService getTopicService() {
-        return null;
+        synchronized (this) {
+            if (topicService == null) {
+                topicService = new TopicServiceImpl(daoFactory.getUserDao(), daoFactory.getTopicDao());
+            }
+        }
+        return topicService;
     }
 
     @Override
     public UserService getUserService() {
-        return null;
+        synchronized (this) {
+            if (userService == null) {
+                userService = new UserServiceImpl(daoFactory.getUserDao());
+            }
+        }
+        return userService;
     }
 
 }

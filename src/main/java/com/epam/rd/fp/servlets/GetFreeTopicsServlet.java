@@ -1,7 +1,11 @@
 package com.epam.rd.fp.servlets;
 
 import com.epam.rd.fp.dao.TopicDao;
+import com.epam.rd.fp.factory.ServiceFactory;
+import com.epam.rd.fp.factory.impl.ServiceFactoryImpl;
 import com.epam.rd.fp.model.Topic;
+import com.epam.rd.fp.service.TopicService;
+import com.epam.rd.fp.service.impl.TopicServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,26 +20,21 @@ import java.util.List;
 
 @WebServlet(name = "GetFreeTopicsServlet", value = "/getFreeTopics")
 public class GetFreeTopicsServlet extends HttpServlet {
+    private final ServiceFactory serviceFactory = new ServiceFactoryImpl();
+    private final TopicService topicService = serviceFactory.getTopicService();
     private static final Logger log = LogManager.getLogger(GetFreeTopicsServlet.class);
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean exceptionCaught = false;
-        TopicDao topicDao = new TopicDao();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(CONNECTION_URL);
-            List<Topic> topics = topicDao.getFreeTopics(connection);
+            List<Topic> topics = topicService.getFreeTopics();
             request.setAttribute("freeTopics", topics);
-        } catch (IllegalArgumentException | SQLException | ClassNotFoundException e) {
+        } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
-            exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
         }
-        if (!exceptionCaught) {
             request.getRequestDispatcher("chooseFreeTopic.jsp").forward(request, response);
-        }
     }
 }

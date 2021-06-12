@@ -1,6 +1,7 @@
 package com.epam.rd.fp.service;
 
 import com.epam.rd.fp.model.Meeting;
+import com.epam.rd.fp.model.Topic;
 
 import java.util.List;
 
@@ -24,4 +25,12 @@ public interface MeetingService {
     int countMeetingParticipants(int meetingId);
 
     int countMeetingRegisteredUsers(int meetingId);
+
+    List<Topic> getMeetingsTopics(int meetingId);
+
+    void addMeetingParticipant(int userId, int meetingId);
+
+    void setMeetingDate(int id, String newDate);
+
+    void bindLocationIdWithMeetingId(int locationId, int meetingId);
 }

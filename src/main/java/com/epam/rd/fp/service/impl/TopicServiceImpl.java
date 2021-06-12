@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.List;
 
 public class TopicServiceImpl implements TopicService {
     private final UserDao userDao;
@@ -60,6 +61,21 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void updateTopicAvailability(Topic topic, boolean b) {
         topicDao.updateTopicAvailability(topic, b);
+    }
+
+    @Override
+    public List<Topic> getTopicIdBySpeakerId(int speakerId) {
+        return topicDao.getTopicIdBySpeakerId(speakerId);
+    }
+
+    @Override
+    public List<Topic> getFreeTopics() {
+        return topicDao.getFreeTopics();
+    }
+
+    @Override
+    public List<Topic> getSuggestedTopics() {
+        return topicDao.getSuggestedTopics();
     }
 
 }
