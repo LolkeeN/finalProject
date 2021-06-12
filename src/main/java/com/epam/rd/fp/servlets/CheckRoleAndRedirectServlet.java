@@ -1,5 +1,8 @@
 package com.epam.rd.fp.servlets;
 
+import com.epam.rd.fp.model.enums.Role;
+import com.epam.rd.fp.service.DBManager;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -16,11 +19,11 @@ public class CheckRoleAndRedirectServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/loginPage.jsp");
         }
 
-        if (userRole == 1){
+        if (userRole == Role.USER.getValue()){
             response.sendRedirect(request.getContextPath() + "/mainPage.jsp");
-        }else if(userRole == 2){
+        }else if(userRole == Role.MODERATOR.getValue()){
             response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
-        }else if(userRole == 3) {
+        }else if(userRole == Role.SPEAKER.getValue()) {
             response.sendRedirect(request.getContextPath() + "/speakerPage.jsp");
         }
     }

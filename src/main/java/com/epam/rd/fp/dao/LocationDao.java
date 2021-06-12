@@ -33,8 +33,9 @@ public class LocationDao {
      */
     public void insertLocation(Location location) {
         ResultSet rs;
-        try (Connection conn = DBManager.getInstance().getConnection(CONNECTION_URL)) {
-            try (PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)) {
+        try (Connection conn = DBManager.getInstance().getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)
+        ) {
 
                 prepStat.setString(1, location.getCountry());
                 prepStat.setString(2, location.getCity());
@@ -54,7 +55,6 @@ public class LocationDao {
                     while (rs.next()) {
                         location.setId(rs.getInt("id"));
                     }
-                }
             }
         } catch (SQLException | NullPointerException e) {
             log.error("Cannot insert location into location table", e);
@@ -71,11 +71,12 @@ public class LocationDao {
      * @return a location with id you've entered
      * @throws IllegalArgumentException when cannot get a location
      */
-    public Location getLocation(Connection conn, int id) {
+    public Location getLocation(int id) {
         ResultSet rs;
         Location location = new Location();
         location.setId(id);
-        try (PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID)
+        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+             PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID)
         ) {
             prepStat.setInt(1, id);
             rs = prepStat.executeQuery();
