@@ -1,5 +1,7 @@
 package com.epam.rd.fp.filters;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +30,19 @@ public class AdminRoleCheckerFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
             throws IOException, ServletException {
+        int role;
 
         HttpServletRequest httpReq =
                 (HttpServletRequest) req;
 
         HttpSession session = httpReq.getSession();
-
-        int role = (int) session.getAttribute("role");
+        try {
+            role = (int) session.getAttribute("role");
+        }catch (NullPointerException e){
+            session.setAttribute("errorMessage", "Access denied");
+            ((HttpServletResponse) resp).sendRedirect("errorPage.jsp");
+            return;
+        }
 
         if (role != 2) {
             session.setAttribute("errorMessage", "Access denied");

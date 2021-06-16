@@ -2,7 +2,9 @@ package daoTests;
 
 import com.epam.rd.fp.dao.LocationDao;
 import com.epam.rd.fp.dao.MeetingDao;
+import com.epam.rd.fp.factory.DaoFactory;
 import com.epam.rd.fp.factory.ServiceFactory;
+import com.epam.rd.fp.factory.impl.DaoFactoryImpl;
 import com.epam.rd.fp.factory.impl.ServiceFactoryImpl;
 import com.epam.rd.fp.model.Location;
 import com.epam.rd.fp.model.Meeting;
@@ -19,24 +21,24 @@ import static com.epam.rd.fp.util.Constants.CONNECTION_URL;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MeetingLocationDaoTest {
-    private final ServiceFactory serviceFactory = new ServiceFactoryImpl();
-    private final MeetingService meetingService = serviceFactory.getMeetingService();
-    private final LocationService locationService = serviceFactory.getLocationService();
+public class MeetingLocationDaoTest extends AbstractIntegrationTest{
+    private final DBManager dbManager = DBManager.getInstance();
+    private final DaoFactory daoFactory = new DaoFactoryImpl();
+    private final MeetingDao meetingDao = daoFactory.getMeetingDao();
+    private final LocationDao locationDao = daoFactory.getLocationDao();
 
     @Test
     public void bindLocationIdWithMeetingIdTest() throws SQLException {
         int providedMeetingId = 0;
-        Meeting meeting = meetingService.getMeetingByName("name");
-        Location location = locationService.getLocation(1);
-        meetingService.bindLocationIdWithMeetingId(location.getId(), meeting.getId());
+        Meeting meeting = meetingDao.getMeetingById(1);
+        Location location = locationDao.getLocation(1);
+        meetingDao.bindLocationIdWithMeetingId(location.getId(), meeting.getId());
         providedMeetingId = getMeetingLocation(providedMeetingId, location);
         Assertions.assertEquals(meeting.getId(), providedMeetingId);
     }
 
     private int getMeetingLocation(int providedMeetingId, Location location) throws SQLException {
-        DBManager dbManager = DBManager.getInstance();
-        PreparedStatement prepStat = dbManager.getConnection(CONNECTION_URL).prepareStatement("select * from meeting_location where location_id = ?");
+        PreparedStatement prepStat = dbManager.getConnection().prepareStatement("select * from meeting_location where location_id = ?");
         prepStat.setInt(1, location.getId());
         ResultSet rs = prepStat.executeQuery();
         while (rs.next()) {
@@ -48,7 +50,7 @@ public class MeetingLocationDaoTest {
 
     @Test
     public void testExceptionThrownInBindMeetingWithLocation() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingService.bindLocationIdWithMeetingId(123123, 123123));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> meetingDao.bindLocationIdWithMeetingId(123123, 123123));
 
 
         String expectedMessage = "Cannot bind location with meeting";

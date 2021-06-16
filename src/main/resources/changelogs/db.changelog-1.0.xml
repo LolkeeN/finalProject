@@ -179,6 +179,7 @@
             <column name="date" value="01.06.2021"/>
             <column name="language" value="en"/>
             <column name="description" value="asdasdasdasd"/>
+            <column name="available" value="true"/>
         </insert>
     </changeSet>
 

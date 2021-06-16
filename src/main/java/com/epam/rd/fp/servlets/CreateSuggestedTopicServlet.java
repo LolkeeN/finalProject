@@ -42,7 +42,7 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
             topics.add(topic);
             meeting.setTopics(topics);
             meetingService.bindTopicIdWithMeetingId(topic.getId(), meeting.getId());
-        }catch (IllegalArgumentException e){
+        }catch (IllegalArgumentException | InvalidTopicException e){
             log.error(e.getMessage());
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");

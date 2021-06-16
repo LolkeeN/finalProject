@@ -18,7 +18,7 @@ public interface MeetingService {
 
     void bindTopicIdWithMeetingId(int topicId, int meetingId);
 
-    Meeting getMeetingById(int meetingName);
+    Meeting getMeetingById(int meetingId);
 
     List<Meeting> getAllMeetings();
 

@@ -29,7 +29,6 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        boolean exceptionCaught = false;
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String firstName = request.getParameter("firstName");
@@ -43,7 +42,7 @@ public class RegistrationServlet extends HttpServlet {
         parameterList.add(firstName);
         parameterList.add(lastName);
         parameterList.add(roleValue);
-        checkForEmptyFields(request, response, exceptionCaught, parameterList);
+        checkForEmptyFields(request, response, parameterList);
 
 
         Role role = null;
@@ -69,17 +68,15 @@ public class RegistrationServlet extends HttpServlet {
             }
         }catch (IllegalArgumentException | IllegalStateException e){
             log.error(e.getMessage());
-            exceptionCaught = true;
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
         }
-        if (!exceptionCaught) {
             User user = new User(firstName, lastName, password, email, role);
             try {
                 boolean isRegistered = userService.isAlreadyRegistered(user.getEmail());
                 if (isRegistered){
                     log.error("user's already registered");
-                    exceptionCaught = true;
                     request.getSession().setAttribute("errorMessage", "User's already registered");
                     response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
                 }else {
@@ -96,20 +93,15 @@ public class RegistrationServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
                 return;
             }
-            if (!exceptionCaught) {
                 checkRoleAndRedirect(request, response, user);
-            }
         }
-    }
 
-    private void checkForEmptyFields(HttpServletRequest request, HttpServletResponse response, boolean exceptionCaught, List<String> parameterList) throws IOException {
+    private void checkForEmptyFields(HttpServletRequest request, HttpServletResponse response, List<String> parameterList) throws IOException {
         for (String elem: parameterList) {
             if (elem.equals("")){
-                if (!exceptionCaught) {
                     request.getSession().setAttribute("errorMessage", "Some fields are empty");
                     response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
                     return;
-                }
             }
         }
     }

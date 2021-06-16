@@ -79,7 +79,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public List<Topic> getMeetingsTopics(int meetingId) {
-        return meetingDao.getMeetingsTopics(meetingId);
+        return meetingDao.getMeetingTopics(meetingId);
     }
 
     @Override

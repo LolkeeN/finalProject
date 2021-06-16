@@ -18,7 +18,7 @@ public class LocationDao {
     private static final String INSERT_LOCATION_INTO_LOCATION_TABLE = "INSERT into location (country, city, street, house, room, language) values (?, ?, ?, ?, ?,?)";
     private static final String GET_LOCATION_ID_BY_ITS_DATA = "SELECT  id from location where country = ? AND city = ? AND street = ? AND house = ? AND room = ?";
     private static final String GET_LOCATION_DATA_BY_ID = "SELECT * FROM location WHERE id = ?";
-    private DBManager dbManager;
+    private final DBManager dbManager;
 
     public LocationDao(DBManager dbManager) {
         this.dbManager = dbManager;
@@ -33,7 +33,7 @@ public class LocationDao {
      */
     public void insertLocation(Location location) {
         ResultSet rs;
-        try (Connection conn = DBManager.getInstance().getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)
         ) {
 
@@ -75,7 +75,7 @@ public class LocationDao {
         ResultSet rs;
         Location location = new Location();
         location.setId(id);
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement(GET_LOCATION_DATA_BY_ID)
         ) {
             prepStat.setInt(1, id);

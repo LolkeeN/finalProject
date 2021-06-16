@@ -7,23 +7,22 @@ import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.service.DBManager;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class LocationDaoTest {
-    private static final String CONNECTION_URL = "jdbc:h2:~/meetings";
+public class LocationDaoTest extends AbstractIntegrationTest {
+
+    private LocationDao locationDao = new LocationDao(DBManager.getInstance());
 
     @Test
-    public void testInsertAndGetLocationWithRuLanguage() throws SQLException, ClassNotFoundException {
-        Class.forName("org.h2.Driver");
-        Connection connection = DriverManager.getConnection(CONNECTION_URL, "root", "myrootpass");
-        LocationDao locationDao = new LocationDao(DBManager.getInstance());
+    public void testInsertAndGetLocationWithRuLanguage() {
+        //GIVEN
         Location location = new Location();
         location.setCountry("country");
         location.setStreet("street");
@@ -32,40 +31,44 @@ public class LocationDaoTest {
         location.setLanguage(Language.RU);
         location.setId(1);
         location.setCity("city");
+
+        //WHEN
         locationDao.insertLocation(location);
-        String expectedResult = location.toString();
-        String providedResult = locationDao.getLocation(location.getId()).toString();
-        Assertions.assertEquals(expectedResult, providedResult);
+
+        //THEN
+        assertEquals(location, locationDao.getLocation(location.getId()));
     }
     @Test
     public void testInsertAndGetLocationWithEnLanguage() throws SQLException, ClassNotFoundException {
-        Class.forName("org.h2.Driver");
-        LocationDao locationDao = new LocationDao(DBManager.getInstance());
+        //GIVEN
         Location location = new Location();
         location.setCountry("country");
         location.setStreet("street");
         location.setRoom("1");
         location.setHouse("2");
-        location.setLanguage(Language.EN);
+        location.setLanguage(Language.RU);
         location.setId(1);
         location.setCity("city");
+
+        //WHEN
         locationDao.insertLocation(location);
-        String expectedResult = location.toString();
-        String providedResult = locationDao.getLocation(location.getId()).toString();
-        Assertions.assertEquals(expectedResult, providedResult);
+
+        //THEN
+        assertEquals(location, locationDao.getLocation(location.getId()));
     }
 
     @Test
     public void testExceptionThrownInGetLocation() {
-        LocationDao locationDao = new LocationDao(DBManager.getInstance());
-
+        //GIVEN
         Location location = locationDao.getLocation(1231231);
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> locationDao.insertLocation(location));
-
-
         String expectedMessage = "Cannot insert location";
+
+        //WHEN
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> locationDao.insertLocation(location));
         String actualMessage = exception.getMessage();
 
+
+        //THEN
         assertTrue(actualMessage.contains(expectedMessage));
     }
 }

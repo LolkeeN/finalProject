@@ -18,7 +18,7 @@ import java.util.Date;
 public class RunLiquibase {
     public static void main(String[] args) throws ParseException {
         DBManager dbManager = DBManager.getInstance();
-        try (Connection connection = dbManager.getConnection("jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass")) {
+        try (Connection connection = dbManager.getConnection()) {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
             Liquibase liquibase = new Liquibase("changelogs/db.changelog-1.0.xml", new ClassLoaderResourceAccessor(), database);
             liquibase.update(new Contexts(), new LabelExpression());

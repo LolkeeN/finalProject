@@ -5,10 +5,7 @@ import com.epam.rd.fp.model.enums.Language;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Meeting implements Comparable<Meeting> {
     private int id;
@@ -116,6 +113,19 @@ public class Meeting implements Comparable<Meeting> {
                 ", location=" + location +
                 ", language=" + language +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Meeting meeting = (Meeting) o;
+        return id == meeting.id && registeredUsers == meeting.registeredUsers && participantsCount == meeting.participantsCount && Objects.equals(name, meeting.name) && Objects.equals(date, meeting.date) && Objects.equals(topics, meeting.topics) && Objects.equals(location, meeting.location) && language == meeting.language;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, date, topics, registeredUsers, participantsCount, location, language);
     }
 }
 

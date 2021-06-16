@@ -28,4 +28,13 @@ public class DatabaseProperties {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public String toString() {
+        return "DatabaseProperties{" +
+                "url='" + url + '\'' +
+                ", user='" + user + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

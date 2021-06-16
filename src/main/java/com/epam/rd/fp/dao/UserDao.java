@@ -36,7 +36,7 @@ public class UserDao {
      */
     public void insertUser(User user) {
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
 
             prepStat.setString(1, user.getFirstName());
@@ -75,7 +75,7 @@ public class UserDao {
         user.setEmail(email);
         user.setPassword(password);
 
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
         ) {
             prepStat.setString(1, email);
@@ -103,7 +103,7 @@ public class UserDao {
     public User getUser(int id) {
         User user = new User();
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
         ) {
             prepStat.setInt(1, id);
@@ -143,7 +143,7 @@ public class UserDao {
     public boolean isAlreadyRegistered(String email) {
         int userCount = 0;
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");
         ) {
             preparedStatement.setString(1, email);
@@ -171,7 +171,7 @@ public class UserDao {
         int speakerId = 0;
         ResultSet rs;
 
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE topic_id = ?");
         ) {
             prepStat.setInt(1, topicId);
@@ -189,7 +189,7 @@ public class UserDao {
     /**
      * A method to register user for a meeting
      *
-     * @param conn      your database connection
+
      * @param userId    id of user to be registered
      * @param meetingId the id of the meeting the user is registering for
      * @throws IllegalArgumentException when user registration for a meeting fails
@@ -197,7 +197,7 @@ public class UserDao {
     public void registerUserForAMeeting(int userId, int meetingId) {
         int rowcount = 0;
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
         ) {
             preparedStatement.setInt(1, meetingId);
@@ -225,7 +225,7 @@ public class UserDao {
     /**
      * A method to check if user is registered for a meeting
      *
-     * @param conn      your database connection
+
      * @param userId    id of user to check registration
      * @param meetingId id of meeting to check if user is registered
      * @return true if user registered, false if user is not registered
@@ -235,7 +235,7 @@ public class UserDao {
         int rowcount = 0;
         ResultSet rs;
         try {
-            try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+            try (Connection conn = dbManager.getConnection();
                     PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
                 preparedStatement.setInt(1, meetingId);
                 preparedStatement.setInt(2, userId);
@@ -253,5 +253,7 @@ public class UserDao {
             throw new IllegalArgumentException("Cannot check user registration for a meeting");
         }
     }
+
+
 
 }

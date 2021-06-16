@@ -52,7 +52,7 @@ public class MeetingDao {
             throw new IllegalArgumentException("Cannot create meeting with the date that has passed");
         }
 
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement prepStat = conn.prepareStatement(INSERT_MEETING_INTO_MEETING_TABLE)) {
 
             prepStat.setString(1, meeting.getName());
@@ -85,7 +85,7 @@ public class MeetingDao {
         ResultSet rs;
         Meeting meeting = new Meeting();
         meeting.setName(name);
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement prepStat = conn.prepareStatement(SELECT_MEETING_DATA_BY_NAME)) {
             prepStat.setString(1, name);
             rs = prepStat.executeQuery();
@@ -115,7 +115,7 @@ public class MeetingDao {
     public List<Meeting> getAllMeetings() {
         List<Meeting> meetings = new ArrayList<>();
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              Statement statement = conn.createStatement()) {
             rs = statement.executeQuery("SELECT * FROM meeting where id != 1");
             while (rs.next()) {
@@ -159,7 +159,7 @@ public class MeetingDao {
         }
         Meeting meeting = new Meeting();
         meeting.setId(meetingId);
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement(UPDATE_MEETING_DATE_BY_ID);
         ) {
             prepStat.setString(1, date);
@@ -175,7 +175,7 @@ public class MeetingDao {
         ResultSet rs;
         Meeting meeting = new Meeting();
         meeting.setId(meetingId);
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM meeting WHERE id = ?")) {
             prepStat.setInt(1, meetingId);
             rs = prepStat.executeQuery();
@@ -197,14 +197,14 @@ public class MeetingDao {
     /**
      * A method to bind topic with meeting
      *
-     * @param conn      your database connection
+
      * @param topicId   id of topic to bind with meeting
      * @param meetingId id of meeting to bind with topic
      * @throws IllegalArgumentException when cannot bind topic with meeting
      */
 
     public void bindTopicIdWithMeetingId(int topicId, int meetingId) {
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("INSERT INTO meeting_topic (meeting_id, topic_id) values (?, ?)");
         ) {
             prepStat.setInt(1, meetingId);
@@ -219,17 +219,17 @@ public class MeetingDao {
     /**
      * A method to topics connected to meeting
      *
-     * @param conn      your database connection
+
      * @param meetingId id of meeting to get connected topics
      * @return a list of topics connected with meeting
      * @throws IllegalArgumentException when cannot get meeting's topics
      */
-    public List<Topic> getMeetingsTopics(int meetingId) {
+    public List<Topic> getMeetingTopics(int meetingId) {
         List<Topic> topics = new ArrayList<>();
         TopicDao topicDao = new TopicDao(dbManager);
         ResultSet rs;
 
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM meeting_topic WHERE meeting_id = ?");
         ) {
             prepStat.setInt(1, meetingId);
@@ -248,13 +248,12 @@ public class MeetingDao {
     /**
      * A method to delete meeting and topic connectivity
      *
-     * @param conn      your database connection
      * @param topicId   id of topic to delete connection with meeting
      * @param meetingId id of meeting to delete connection with topic
      * @throws IllegalArgumentException when meeting and topic connectivity deletion fails
      */
     public void deleteMeetingAndTopicConnectivityById(int topicId, int meetingId) {
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("DELETE from meeting_topic where topic_id = ? and meeting_id = ?");
         ) {
             prepStat.setInt(1, topicId);
@@ -276,7 +275,7 @@ public class MeetingDao {
      * @throws IllegalArgumentException when updating meeting topics fails
      */
     public void updateMeetingTopic(int oldTopicId, int newTopicId, int meetingId) {
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("UPDATE meeting_topic SET topic_id = ? WHERE meeting_id = ? AND topic_id = ?");
         ) {
             prepStat.setInt(1, newTopicId);
@@ -298,7 +297,7 @@ public class MeetingDao {
      * @throws IllegalArgumentException when cannot bind location with meeting
      */
     public void bindLocationIdWithMeetingId(int locationId, int meetingId) {
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("INSERT INTO meeting_location (meeting_id, location_id) values (?, ?)");
         ) {
             prepStat.setInt(1, meetingId);
@@ -319,7 +318,7 @@ public class MeetingDao {
      * @throws IllegalArgumentException when cannot set meeting's location
      */
     public void setMeetingLocation(int meetingId, int locationId) {
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
              PreparedStatement prepStat = conn.prepareStatement("UPDATE meeting_location SET location_id = ? WHERE meeting_id = ?");
         ) {
             prepStat.setInt(1, locationId);
@@ -334,7 +333,7 @@ public class MeetingDao {
     /**
      * A method to add user as meeting participant
      *
-     * @param conn      your database connection
+
      * @param userId    id of user to be a participant
      * @param meetingId id of meeting
      * @throws IllegalArgumentException when adding a participant fails
@@ -342,7 +341,7 @@ public class MeetingDao {
     public void addMeetingParticipant(int userId, int meetingId) {
         int rowcount = 0;
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM meeting_participants where meeting_id = ? AND user_id = ?");
         ) {
             preparedStatement.setInt(1, meetingId);
@@ -369,7 +368,7 @@ public class MeetingDao {
     /**
      * A method to cont how many participants meeting has
      *
-     * @param conn      your database connection
+
      * @param meetingId id of meeting to cont participants
      * @return integer number of meeting's participants
      * @throws IllegalArgumentException when cannot count meeting participants
@@ -377,7 +376,7 @@ public class MeetingDao {
     public int countMeetingParticipants(int meetingId) {
         int userCount = 0;
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM meeting_participants where meeting_id = ?");
         ) {
             preparedStatement.setInt(1, meetingId);
@@ -395,7 +394,7 @@ public class MeetingDao {
     /**
      * A method to count how many users is registered for a meeting
      *
-     * @param conn      your database connection
+
      * @param meetingId id of meeting to count registered users
      * @return integer number of registered users
      * @throws IllegalArgumentException when cannot count meeting's registered users
@@ -403,7 +402,7 @@ public class MeetingDao {
     public int countMeetingRegisteredUsers(int meetingId) {
         int userCount = 0;
         ResultSet rs;
-        try (Connection conn = dbManager.getConnection(CONNECTION_URL);
+        try (Connection conn = dbManager.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM registered_users where meeting_id = ?");
         ) {
             preparedStatement.setInt(1, meetingId);
