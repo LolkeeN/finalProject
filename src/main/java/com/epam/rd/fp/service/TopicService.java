@@ -1,7 +1,6 @@
 package com.epam.rd.fp.service;
 
 import com.epam.rd.fp.model.Topic;
-import com.epam.rd.fp.model.User;
 
 import java.util.List;
 

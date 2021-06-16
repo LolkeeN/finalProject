@@ -26,12 +26,12 @@ public class GetSuggestedTopicsServlet extends HttpServlet {
         try {
             List<Topic> topics = topicService.getSuggestedTopics();
             request.setAttribute("suggestedTopics", topics);
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("suggestedTopicsPage.jsp").forward(request, response);
+        request.getRequestDispatcher("suggestedTopicsPage.jsp").forward(request, response);
     }
 }

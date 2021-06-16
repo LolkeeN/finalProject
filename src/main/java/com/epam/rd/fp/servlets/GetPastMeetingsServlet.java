@@ -34,13 +34,13 @@ public class GetPastMeetingsServlet extends HttpServlet {
         try {
             request.setAttribute("pastMeetings", getPastMeetings(pastMeetings, df));
 
-        }catch (IllegalArgumentException | ParseException e ){
-            log.error(e.getMessage());
+        } catch (IllegalArgumentException | ParseException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("pastMeetingsPage.jsp").forward(request, response);
+        request.getRequestDispatcher("pastMeetingsPage.jsp").forward(request, response);
     }
 
     private List<Meeting> getPastMeetings(List<Meeting> pastMeetings, DateFormat df) throws ParseException {

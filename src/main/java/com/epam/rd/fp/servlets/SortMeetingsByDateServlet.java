@@ -38,7 +38,7 @@ public class SortMeetingsByDateServlet extends HttpServlet {
             request.setAttribute("meetings", meetings);
             meetings.sort(new MeetingDateComparator());
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;

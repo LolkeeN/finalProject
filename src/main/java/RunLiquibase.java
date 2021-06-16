@@ -10,10 +10,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class RunLiquibase {
     public static void main(String[] args) throws ParseException {

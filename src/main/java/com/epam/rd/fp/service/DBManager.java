@@ -33,7 +33,6 @@ public class DBManager {
 
     public Connection getConnection() throws SQLException {
         DatabaseProperties databaseProperties = PropertyProvider.getDatabaseProperties();
-        log.warn(PropertyProvider.getDatabaseProperties());
         return DriverManager.getConnection(databaseProperties.getUrl(), databaseProperties.getUser(), databaseProperties.getPassword());
     }
 }

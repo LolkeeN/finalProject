@@ -11,8 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.epam.rd.fp.util.Constants.CONNECTION_URL;
-
 public class LocationDao {
     private static final Logger log = LogManager.getLogger(LocationDao.class);
     private static final String INSERT_LOCATION_INTO_LOCATION_TABLE = "INSERT into location (country, city, street, house, room, language) values (?, ?, ?, ?, ?,?)";
@@ -27,7 +25,6 @@ public class LocationDao {
     /**
      * A method to insert a location into "location" table
      *
-     * @param conn     your database connection
      * @param location a location to insert
      * @throws IllegalArgumentException when insertion fails
      */
@@ -37,24 +34,24 @@ public class LocationDao {
              PreparedStatement prepStat = conn.prepareStatement(INSERT_LOCATION_INTO_LOCATION_TABLE)
         ) {
 
-                prepStat.setString(1, location.getCountry());
-                prepStat.setString(2, location.getCity());
-                prepStat.setString(3, location.getStreet());
-                prepStat.setString(4, location.getHouse());
-                prepStat.setString(5, location.getRoom());
-                prepStat.setString(6, location.getLanguage().getValue());
-                prepStat.execute();
+            prepStat.setString(1, location.getCountry());
+            prepStat.setString(2, location.getCity());
+            prepStat.setString(3, location.getStreet());
+            prepStat.setString(4, location.getHouse());
+            prepStat.setString(5, location.getRoom());
+            prepStat.setString(6, location.getLanguage().getValue());
+            prepStat.execute();
 
-                try (PreparedStatement prSt = conn.prepareStatement(GET_LOCATION_ID_BY_ITS_DATA)) {
-                    prSt.setString(1, location.getCountry());
-                    prSt.setString(2, location.getCity());
-                    prSt.setString(3, location.getStreet());
-                    prSt.setString(4, location.getHouse());
-                    prSt.setString(5, location.getRoom());
-                    rs = prSt.executeQuery();
-                    while (rs.next()) {
-                        location.setId(rs.getInt("id"));
-                    }
+            try (PreparedStatement prSt = conn.prepareStatement(GET_LOCATION_ID_BY_ITS_DATA)) {
+                prSt.setString(1, location.getCountry());
+                prSt.setString(2, location.getCity());
+                prSt.setString(3, location.getStreet());
+                prSt.setString(4, location.getHouse());
+                prSt.setString(5, location.getRoom());
+                rs = prSt.executeQuery();
+                while (rs.next()) {
+                    location.setId(rs.getInt("id"));
+                }
             }
         } catch (SQLException | NullPointerException e) {
             log.error("Cannot insert location into location table", e);
@@ -66,8 +63,7 @@ public class LocationDao {
     /**
      * A method to get a location from "location" table by id
      *
-     * @param conn your database connection
-     * @param id   id of location you want to get
+     * @param id id of location you want to get
      * @return a location with id you've entered
      * @throws IllegalArgumentException when cannot get a location
      */

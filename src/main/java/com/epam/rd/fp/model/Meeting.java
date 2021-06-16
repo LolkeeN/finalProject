@@ -2,10 +2,9 @@ package com.epam.rd.fp.model;
 
 import com.epam.rd.fp.model.enums.Language;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Meeting implements Comparable<Meeting> {
     private int id;

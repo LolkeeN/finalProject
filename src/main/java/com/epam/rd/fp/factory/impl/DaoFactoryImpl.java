@@ -46,8 +46,8 @@ public class DaoFactoryImpl implements DaoFactory {
 
     @Override
     public UserDao getUserDao() {
-        synchronized (this){
-            if (userDao == null){
+        synchronized (this) {
+            if (userDao == null) {
                 userDao = new UserDao(dbManager);
             }
         }

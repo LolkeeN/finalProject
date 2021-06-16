@@ -30,12 +30,17 @@ public class GetMeetingRegisteredAndParticipantsCountServlet extends HttpServlet
             registeredCount = meetingService.countMeetingRegisteredUsers(meetingId);
             request.getSession().setAttribute("participants_count", participantsCount);
             request.getSession().setAttribute("registered_count", registeredCount);
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", "Meeting id  field is empty or has invalid format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("meetingParticipantsAndRegisteredCount.jsp").forward(request, response);
+        request.getRequestDispatcher("meetingParticipantsAndRegisteredCount.jsp").forward(request, response);
     }
 }

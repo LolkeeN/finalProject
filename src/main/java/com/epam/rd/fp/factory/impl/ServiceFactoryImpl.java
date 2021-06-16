@@ -31,7 +31,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
     @Override
     public LocationService getLocationService() {
         synchronized (this) {
-            if ( locationService == null) {
+            if (locationService == null) {
                 locationService = new LocationServiceImpl(daoFactory.getLocationDao());
             }
         }

@@ -53,22 +53,22 @@ public class CreateTopicServlet extends HttpServlet {
             meeting.setTopics(topics);
             meetingService.bindTopicIdWithMeetingId(topic.getId(), meeting.getId());
         } catch (NumberFormatException e) {
-            log.error(e.getMessage(),e);
-            request.getSession().setAttribute("errorMessage", "Wrong data input format");
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", "Topic id field is empty or has invalid format");
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         } catch (IllegalArgumentException | ParseException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", "Some input field are null");
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
+        response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
     }
 
     private Topic getTopic(HttpServletRequest request) {

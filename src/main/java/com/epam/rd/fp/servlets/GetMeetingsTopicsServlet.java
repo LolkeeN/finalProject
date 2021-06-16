@@ -30,12 +30,17 @@ public class GetMeetingsTopicsServlet extends HttpServlet {
             request.getSession().setAttribute("meeting_id", meetingId);
             topics = meetingService.getMeetingsTopics(meetingId);
             request.setAttribute("topics", topics);
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", "Meeting id  field is empty or has invalid format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("meetingTopicsPage.jsp").forward(request, response);
+        request.getRequestDispatcher("meetingTopicsPage.jsp").forward(request, response);
     }
 }

@@ -23,12 +23,16 @@ public class BindFreeTopicServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         try {
-           topicService.bindSpeakerWithFreeTopic((int)request.getSession().getAttribute("id"), Integer.parseInt(request.getParameter("topic_id")));
-        }catch (IllegalArgumentException e){
+            topicService.bindSpeakerWithFreeTopic((int) request.getSession().getAttribute("id"), Integer.parseInt(request.getParameter("topic_id")));
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("errorMessage", "Topic date field is empty or has invalid format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
+        } catch (IllegalArgumentException e) {
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
+        request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
     }
 }

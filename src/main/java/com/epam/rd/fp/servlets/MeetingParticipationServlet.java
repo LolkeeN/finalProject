@@ -13,9 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 @WebServlet(name = "MeetingParticipationServlet", value = "/meetingParticipation")
 public class MeetingParticipationServlet extends HttpServlet {
@@ -30,17 +27,22 @@ public class MeetingParticipationServlet extends HttpServlet {
         int userId = (int) request.getSession().getAttribute("id");
         try {
             int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
-             if (userService.isRegistered(userId, meetingId)) {
+            if (userService.isRegistered(userId, meetingId)) {
                 meetingService.addMeetingParticipant(userId, meetingId);
-            }else{
+            } else {
                 throw new IllegalArgumentException("You are not registered for this meeting. You have to register first!");
             }
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", "Meeting id field is empty or has invalid format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            response.sendRedirect(request.getContextPath() + "/mainPage.jsp");
+        response.sendRedirect(request.getContextPath() + "/mainPage.jsp");
     }
 }

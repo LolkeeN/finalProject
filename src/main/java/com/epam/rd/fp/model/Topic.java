@@ -5,7 +5,7 @@ import com.epam.rd.fp.model.enums.Language;
 import java.util.Objects;
 
 
-public class Topic{
+public class Topic {
     private int id;
     private String name;
     private String description;

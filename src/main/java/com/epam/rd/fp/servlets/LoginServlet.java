@@ -36,12 +36,12 @@ public class LoginServlet extends HttpServlet {
             request.getSession().setAttribute("id", user.getId());
             request.setAttribute("id", user.getId());
         } catch (IllegalArgumentException | IllegalStateException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         } catch (NullPointerException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", "You are not registered");
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;

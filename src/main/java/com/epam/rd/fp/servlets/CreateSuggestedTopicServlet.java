@@ -42,13 +42,13 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
             topics.add(topic);
             meeting.setTopics(topics);
             meetingService.bindTopicIdWithMeetingId(topic.getId(), meeting.getId());
-        }catch (IllegalArgumentException | InvalidTopicException e){
-            log.error(e.getMessage());
+        } catch (IllegalArgumentException | InvalidTopicException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            response.sendRedirect(request.getContextPath() + "/speakerPage.jsp");
+        response.sendRedirect(request.getContextPath() + "/speakerPage.jsp");
     }
 
     private Topic getTopic(HttpServletRequest request) {
@@ -70,17 +70,17 @@ public class CreateSuggestedTopicServlet extends HttpServlet {
         return topic;
     }
 
-    private void validateTopic(Topic topic){
-        if (topic.getDate().isEmpty()){
+    private void validateTopic(Topic topic) {
+        if (topic.getDate().isEmpty()) {
             throw new InvalidTopicException("Topic date is invalid");
         }
-        if (topic.getDescription().isEmpty()){
+        if (topic.getDescription().isEmpty()) {
             throw new InvalidTopicException("Topic description is invalid");
         }
-        if (topic.getName().isEmpty()){
+        if (topic.getName().isEmpty()) {
             throw new InvalidTopicException("Topic name is invalid");
         }
-        if (topic.getLanguage().getValue().isEmpty()){
+        if (topic.getLanguage().getValue().isEmpty()) {
             throw new InvalidTopicException("Topic language is invalid");
         }
     }

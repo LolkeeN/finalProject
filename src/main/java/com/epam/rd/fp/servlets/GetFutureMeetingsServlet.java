@@ -1,21 +1,18 @@
 package com.epam.rd.fp.servlets;
 
-import com.epam.rd.fp.dao.MeetingDao;
 import com.epam.rd.fp.factory.ServiceFactory;
 import com.epam.rd.fp.factory.impl.ServiceFactoryImpl;
 import com.epam.rd.fp.model.Meeting;
 import com.epam.rd.fp.service.MeetingService;
-import com.epam.rd.fp.service.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,13 +33,13 @@ public class GetFutureMeetingsServlet extends HttpServlet {
 
         try {
             request.setAttribute("futureMeetings", getFutureMeetings(futureMeetings, df));
-        }catch (IllegalArgumentException | ParseException e ){
-            log.error(e.getMessage());
+        } catch (IllegalArgumentException | ParseException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("futureMeetingsPage.jsp").forward(request, response);
+        request.getRequestDispatcher("futureMeetingsPage.jsp").forward(request, response);
     }
 
     private List<Meeting> getFutureMeetings(List<Meeting> futureMeetings, DateFormat df) throws ParseException {

@@ -26,12 +26,17 @@ public class MeetingRegistrationServlet extends HttpServlet {
         try {
             int meetingId = Integer.parseInt(request.getParameter("meeting_id"));
             userService.registerUserForAMeeting(userId, meetingId);
-        }catch (IllegalArgumentException e){
-            log.error(e.getMessage());
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", "Meeting id field is empty or has invalid format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            response.sendRedirect(request.getContextPath() + "/mainPage.jsp");
+        response.sendRedirect(request.getContextPath() + "/mainPage.jsp");
     }
 }

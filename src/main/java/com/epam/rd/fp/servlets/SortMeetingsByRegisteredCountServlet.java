@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class SortMeetingsByRegisteredCountServlet extends HttpServlet {
             meetings.sort(new MeetingRegisteredUsersComparator());
 
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;

@@ -13,10 +13,10 @@ public enum Language {
         return value;
     }
 
-    public static Language fromString(String language){
-            if ("EN".equalsIgnoreCase(language)) {
-                return Language.EN;
-            }
-            return Language.RU;
+    public static Language fromString(String language) {
+        if ("EN".equalsIgnoreCase(language)) {
+            return Language.EN;
+        }
+        return Language.RU;
     }
 }

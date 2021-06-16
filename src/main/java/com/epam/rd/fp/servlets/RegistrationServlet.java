@@ -47,7 +47,7 @@ public class RegistrationServlet extends HttpServlet {
 
         Role role = null;
         try {
-            if (!email.contains("@") && !email.contains(".")){
+            if (!email.contains("@") && !email.contains(".")) {
                 throw new IllegalArgumentException("Wrong email format");
             }
             switch (roleValue) {
@@ -66,42 +66,42 @@ public class RegistrationServlet extends HttpServlet {
                 default:
                     throw new IllegalStateException("Unexpected value: " + roleValue);
             }
-        }catch (IllegalArgumentException | IllegalStateException e){
-            log.error(e.getMessage());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            User user = new User(firstName, lastName, password, email, role);
-            try {
-                boolean isRegistered = userService.isAlreadyRegistered(user.getEmail());
-                if (isRegistered){
-                    log.error("user's already registered");
-                    request.getSession().setAttribute("errorMessage", "User's already registered");
-                    response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
-                }else {
-                    userService.insertUser(user);
-                    request.getSession().setAttribute("first_name", user.getFirstName());
-                    request.getSession().setAttribute("last_name", user.getLastName());
-                    request.getSession().setAttribute("id", user.getId());
-                    request.getSession().setAttribute("email", user.getEmail());
-                    request.getSession().setAttribute("role", user.getRole().getValue());
-                }
-            } catch (IllegalArgumentException e) {
-                log.error(e.getMessage());
-                request.getSession().setAttribute("errorMessage", e.getMessage());
+        User user = new User(firstName, lastName, password, email, role);
+        try {
+            boolean isRegistered = userService.isAlreadyRegistered(user.getEmail());
+            if (isRegistered) {
+                log.error("user's already registered");
+                request.getSession().setAttribute("errorMessage", "User's already registered");
                 response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
-                return;
+            } else {
+                userService.insertUser(user);
+                request.getSession().setAttribute("first_name", user.getFirstName());
+                request.getSession().setAttribute("last_name", user.getLastName());
+                request.getSession().setAttribute("id", user.getId());
+                request.getSession().setAttribute("email", user.getEmail());
+                request.getSession().setAttribute("role", user.getRole().getValue());
             }
-                checkRoleAndRedirect(request, response, user);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
         }
+        checkRoleAndRedirect(request, response, user);
+    }
 
     private void checkForEmptyFields(HttpServletRequest request, HttpServletResponse response, List<String> parameterList) throws IOException {
-        for (String elem: parameterList) {
-            if (elem.equals("")){
-                    request.getSession().setAttribute("errorMessage", "Some fields are empty");
-                    response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
-                    return;
+        for (String elem : parameterList) {
+            if (elem.equals("")) {
+                request.getSession().setAttribute("errorMessage", "Some fields are empty");
+                response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+                return;
             }
         }
     }

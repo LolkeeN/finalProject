@@ -9,8 +9,6 @@ import com.epam.rd.fp.service.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.List;
 
 public class TopicServiceImpl implements TopicService {
@@ -29,13 +27,13 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = topicDao.getTopicById(topicId);
         if (topic.isAvailability()) {
             User user = userDao.getUser(userId);
-            if (user.getRole() != Role.SPEAKER){
+            if (user.getRole() != Role.SPEAKER) {
                 log.warn("Cannot set a topic to non-speaker, user role is not a speaker");
                 throw new IllegalArgumentException("Cannot set a topic to non-speaker");
             }
             topicDao.bindTopicWithSpeakerId(topic.getId(), user.getId());
             topicDao.updateTopicAvailability(topic, false);
-        }else{
+        } else {
             throw new IllegalArgumentException("Topic with id " + topic.getId() + " is not available");
         }
     }
@@ -44,8 +42,7 @@ public class TopicServiceImpl implements TopicService {
     public void bindSpeakerToTopic(int userId, int topicId) {
         Topic topic = topicDao.getTopicById(topicId);
         User user = userDao.getUser(userId);
-        System.out.println(user.getId());
-        if (user.getRole().getValue() != 3){
+        if (user.getRole().getValue() != 3) {
             log.info("Cannot set a topic to non-speaker, user role is not a speaker");
             throw new IllegalArgumentException("Cannot set a topic to non-speaker");
         }

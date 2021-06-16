@@ -1,9 +1,7 @@
 package com.epam.rd.fp.dao;
 
 import com.epam.rd.fp.model.Topic;
-import com.epam.rd.fp.model.User;
 import com.epam.rd.fp.model.enums.Language;
-import com.epam.rd.fp.model.enums.Role;
 import com.epam.rd.fp.service.DBManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,9 +9,6 @@ import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.epam.rd.fp.util.Constants.CONNECTION_URL;
-import static java.sql.DriverManager.getConnection;
 
 public class TopicDao {
     private DBManager dbManager;
@@ -27,7 +22,6 @@ public class TopicDao {
     /**
      * A method to get topic from "topic" table by it's id
      *
-     * @param conn     your database connection
      * @param topicId id of topic to get
      * @return topic with id you've entered
      * @throws IllegalArgumentException when cannot get meeting by id
@@ -37,7 +31,7 @@ public class TopicDao {
         Topic topic = new Topic();
         topic.setId(topicId);
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement("Select * from topic where id = ?");
+             PreparedStatement prepStat = conn.prepareStatement("Select * from topic where id = ?");
         ) {
             prepStat.setInt(1, topicId);
             rs = prepStat.executeQuery();
@@ -62,14 +56,13 @@ public class TopicDao {
     /**
      * A method to insert topic into "topic" table
      *
-     * @param conn  your database connection
      * @param topic a topic to be inserted
      * @throws IllegalArgumentException when insertion fails
      */
     public void insertTopic(Topic topic) {
         ResultSet rs;
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_TOPIC_TABLE)) {
+             PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_TOPIC_TABLE)) {
 
             prepStat.setString(1, topic.getName());
             prepStat.setString(2, topic.getDate());
@@ -93,7 +86,6 @@ public class TopicDao {
     /**
      * A method to get all topics which availability is "true"
      *
-     * @param conn your database connection
      * @return a list of topics which availability is "true"
      * @throws IllegalArgumentException when cannot get all free topics
      */
@@ -102,7 +94,7 @@ public class TopicDao {
         ResultSet rs;
 
         try (Connection conn = dbManager.getConnection();
-                Statement statement = conn.createStatement();
+             Statement statement = conn.createStatement();
         ) {
             rs = statement.executeQuery("SELECT * FROM topic WHERE available = 'true'");
             while (rs.next()) {
@@ -123,14 +115,13 @@ public class TopicDao {
     /**
      * A method to update topics availability
      *
-     * @param conn        your database connection
      * @param topic       a topic which availability needs to be changed
      * @param isAvailable new availability
      * @throws IllegalArgumentException when cannot update meeting's availability
      */
     public void updateTopicAvailability(Topic topic, boolean isAvailable) {
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET available = ? WHERE name = ?");
+             PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET available = ? WHERE name = ?");
         ) {
             prepStat.setString(1, Boolean.toString(isAvailable));
             prepStat.setString(2, topic.getName());
@@ -144,14 +135,13 @@ public class TopicDao {
     /**
      * A method to update topics date
      *
-     * @param conn  your database connection
      * @param topic a topic which date needs to be updated
      * @param date  a new topic's date
      * @throws IllegalArgumentException when cannot update topic's date
      */
     public void updateTopicDate(Topic topic, String date) {
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET date = ? WHERE name = ?");
+             PreparedStatement prepStat = conn.prepareStatement("UPDATE topic SET date = ? WHERE name = ?");
         ) {
             prepStat.setString(1, date);
             prepStat.setString(2, topic.getName());
@@ -165,7 +155,6 @@ public class TopicDao {
     /**
      * A method to get topics that speaker suggested
      *
-     * @param conn your database connection
      * @return a list of topics
      * @throws IllegalArgumentException when cannot get suggested topics
      */
@@ -192,7 +181,6 @@ public class TopicDao {
     /**
      * A method to connect topic with speaker
      *
-     * @param conn       your database connection
      * @param topicId   id of topic to be connected with speaker
      * @param speakerId id of speaker to be connected with topic
      * @throws IllegalArgumentException when cannot bind topic with speaker
@@ -213,7 +201,6 @@ public class TopicDao {
     /**
      * A method to get all topics connected to speaker
      *
-
      * @param speakerId id of the speaker whose topics need to be retrieved
      * @return list of topics connected to speaker
      * @throws IllegalArgumentException when cannot get topic id by speaker id
@@ -224,7 +211,7 @@ public class TopicDao {
         ResultSet rs;
 
         try (Connection conn = dbManager.getConnection();
-             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE speaker_id = ?")){
+             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE speaker_id = ?")) {
 
             prepStat.setInt(1, speakerId);
             rs = prepStat.executeQuery();

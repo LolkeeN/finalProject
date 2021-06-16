@@ -7,8 +7,11 @@ import com.epam.rd.fp.dao.UserDao;
 
 public interface DaoFactory {
     LocationDao getLocationDao();
+
     MeetingDao getMeetingDao();
+
     TopicDao getTopicDao();
+
     UserDao getUserDao();
 
 }

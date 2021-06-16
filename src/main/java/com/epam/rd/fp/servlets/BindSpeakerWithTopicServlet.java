@@ -1,14 +1,8 @@
 package com.epam.rd.fp.servlets;
 
-import com.epam.rd.fp.dao.TopicDao;
-import com.epam.rd.fp.dao.UserDao;
-import com.epam.rd.fp.factory.DaoFactory;
 import com.epam.rd.fp.factory.ServiceFactory;
-import com.epam.rd.fp.factory.impl.DaoFactoryImpl;
 import com.epam.rd.fp.factory.impl.ServiceFactoryImpl;
-import com.epam.rd.fp.service.DBManager;
 import com.epam.rd.fp.service.TopicService;
-import com.epam.rd.fp.service.impl.TopicServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,12 +24,17 @@ public class BindSpeakerWithTopicServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         try {
             topicService.bindSpeakerToTopic(Integer.parseInt(request.getParameter("speaker_id")), Integer.parseInt(request.getParameter("topic_id")));
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage(), e);
+            request.getSession().setAttribute("errorMessage", "Some fields are empty or have invalid format");
+            response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
+        response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
     }
 }

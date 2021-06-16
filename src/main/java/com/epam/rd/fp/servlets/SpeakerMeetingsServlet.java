@@ -36,12 +36,12 @@ public class SpeakerMeetingsServlet extends HttpServlet {
             request.getSession().setAttribute("first_name", speaker.getFirstName());
             request.getSession().setAttribute("last_name", speaker.getLastName());
             request.setAttribute("topics", topics);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
             return;
         }
-            request.getRequestDispatcher("speakerMeetings.jsp").forward(request, response);
+        request.getRequestDispatcher("speakerMeetings.jsp").forward(request, response);
     }
 }

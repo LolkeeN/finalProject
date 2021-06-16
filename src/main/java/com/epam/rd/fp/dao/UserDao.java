@@ -1,10 +1,8 @@
 package com.epam.rd.fp.dao;
 
 import com.epam.rd.fp.model.User;
-import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.model.enums.Role;
 import com.epam.rd.fp.service.DBManager;
-import jdk.nashorn.internal.ir.CallNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,9 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static com.epam.rd.fp.util.Constants.CONNECTION_URL;
-import static java.sql.DriverManager.getConnection;
 
 public class UserDao {
     private final DBManager dbManager;
@@ -30,14 +25,13 @@ public class UserDao {
     /**
      * A method to insert user into "user" table
      *
-     * @param conn your database connection
      * @param user a user to be inserted
      * @throws IllegalArgumentException when insertion fails
      */
     public void insertUser(User user) {
         ResultSet rs;
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
+             PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
 
             prepStat.setString(1, user.getFirstName());
             prepStat.setString(2, user.getLastName());
@@ -63,7 +57,6 @@ public class UserDao {
     /**
      * A method to get user from "user" table by it's email and password
      *
-     * @param conn     your database connection
      * @param email    user's email
      * @param password user's password
      * @return user with email and password you've entered
@@ -76,7 +69,7 @@ public class UserDao {
         user.setPassword(password);
 
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
+             PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
         ) {
             prepStat.setString(1, email);
             prepStat.setString(2, password);
@@ -95,8 +88,7 @@ public class UserDao {
     /**
      * A method to get user from "user" table by it's id
      *
-     * @param conn your database connection
-     * @param id   user's id
+     * @param id user's id
      * @return user with id you've entered
      * @throws IllegalArgumentException when cannot get user by id
      */
@@ -104,7 +96,7 @@ public class UserDao {
         User user = new User();
         ResultSet rs;
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
         ) {
             prepStat.setInt(1, id);
             rs = prepStat.executeQuery();
@@ -144,7 +136,7 @@ public class UserDao {
         int userCount = 0;
         ResultSet rs;
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");
         ) {
             preparedStatement.setString(1, email);
             rs = preparedStatement.executeQuery();
@@ -162,7 +154,6 @@ public class UserDao {
     /**
      * A method to get speaker id by id of topic connected with him
      *
-     * @param conn    your database connection
      * @param topicId id of the topic whose speaker you want to get
      * @return speaker's id
      * @throws IllegalArgumentException when cannot get speaker id by topic id
@@ -189,7 +180,6 @@ public class UserDao {
     /**
      * A method to register user for a meeting
      *
-
      * @param userId    id of user to be registered
      * @param meetingId the id of the meeting the user is registering for
      * @throws IllegalArgumentException when user registration for a meeting fails
@@ -198,7 +188,7 @@ public class UserDao {
         int rowcount = 0;
         ResultSet rs;
         try (Connection conn = dbManager.getConnection();
-                PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
         ) {
             preparedStatement.setInt(1, meetingId);
             preparedStatement.setInt(2, userId);
@@ -225,7 +215,6 @@ public class UserDao {
     /**
      * A method to check if user is registered for a meeting
      *
-
      * @param userId    id of user to check registration
      * @param meetingId id of meeting to check if user is registered
      * @return true if user registered, false if user is not registered
@@ -236,7 +225,7 @@ public class UserDao {
         ResultSet rs;
         try {
             try (Connection conn = dbManager.getConnection();
-                    PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
+                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
                 preparedStatement.setInt(1, meetingId);
                 preparedStatement.setInt(2, userId);
                 rs = preparedStatement.executeQuery();
@@ -253,7 +242,6 @@ public class UserDao {
             throw new IllegalArgumentException("Cannot check user registration for a meeting");
         }
     }
-
 
 
 }
