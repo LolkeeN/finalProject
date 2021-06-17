@@ -43,7 +43,7 @@
 <br/>
 <div class="container-fluid">
 <form action="changeMeetingTimeAndPlace" method="post">
-    <b>Meeting name -> </b><input name="name"/><br/><br/>
+    <b>Meeting id -> </b><input name="meeting_id"/><br/><br/>
     <b>Date -> </b><input name="date"/> Date must be later than today<br/><br/>
     <b>Location id -> </b><input name="location_id"/><br/><br/>
     <button type="submit" class="btn btn-secondary">Change meeting date</button>

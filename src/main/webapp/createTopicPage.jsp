@@ -47,7 +47,7 @@
     <b>Date -> </b><input name="date"/> Must be equals to meeting date<br/><br/>
     <b>language -> </b><input name="language"/><br/><br/>
     <b>description -> </b><input name="description"/><br/><br/>
-    <b>meeting name -> </b><input name="meeting_name"/><br/><br/>
+    <b>meeting id -> </b><input name="meeting_id"/><br/><br/>
     <button type="submit" class="btn btn-secondary">Create topic</button>
 </form>
 <form action="getSuggestedTopics" method="get">

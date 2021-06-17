@@ -1,19 +1,18 @@
 package com.epam.rd.fp.servlets;
 
-import com.epam.rd.fp.dao.MeetingDao;
-import com.epam.rd.fp.dao.MeetingParticipantsDao;
-import com.epam.rd.fp.dao.RegisteredUsersDao;
+import com.epam.rd.fp.factory.ServiceFactory;
+import com.epam.rd.fp.factory.impl.ServiceFactoryImpl;
 import com.epam.rd.fp.model.Meeting;
+import com.epam.rd.fp.service.MeetingService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,36 +22,28 @@ import java.util.List;
 
 @WebServlet(name = "SortMeetingsByDateServlet", value = "/sortMeetingsByDate")
 public class SortMeetingsByDateServlet extends HttpServlet {
+    private final ServiceFactory serviceFactory = new ServiceFactoryImpl();
+    private final MeetingService meetingService = serviceFactory.getMeetingService();
     private static final Logger log = LogManager.getLogger(SortMeetingsByDateServlet.class);
-    private static final String CONNECTION_URL = "jdbc:mysql://localhost:3306/meetings?createDatabaseIfNotExist=true&user=root&password=myrootpass";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean exceptionCaught = false;
-        MeetingDao meetingDao = new MeetingDao();
-        MeetingParticipantsDao meetingParticipantsDao = new MeetingParticipantsDao();
-        RegisteredUsersDao registeredUsersDao = new RegisteredUsersDao();
-
         List<Meeting> meetings;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(CONNECTION_URL);
-            meetings = meetingDao.getAllMeetings(connection);
-            for (Meeting meeting:meetings) {
-                meeting.setParticipantsCount(meetingParticipantsDao.countMeetingParticipants(connection, meeting.getId()));
-                meeting.setRegisteredUsers(registeredUsersDao.countMeetingRegisteredUsers(connection, meeting.getId()));
+            meetings = meetingService.getAllMeetings();
+            for (Meeting meeting : meetings) {
+                meeting.setParticipantsCount(meetingService.countMeetingParticipants(meeting.getId()));
+                meeting.setRegisteredUsers(meetingService.countMeetingRegisteredUsers(meeting.getId()));
             }
             request.setAttribute("meetings", meetings);
             meetings.sort(new MeetingDateComparator());
-        } catch (IllegalArgumentException | ClassNotFoundException | SQLException e) {
-            log.error(e.getMessage());
-            exceptionCaught = true;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             request.getSession().setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+            return;
         }
-        if (!exceptionCaught) {
-            request.getRequestDispatcher("allMeetingsPage.jsp").forward(request, response);
-        }
+        request.getRequestDispatcher("allMeetingsPage.jsp").forward(request, response);
     }
 
     static class MeetingDateComparator implements Comparator<Meeting> {

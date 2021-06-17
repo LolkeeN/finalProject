@@ -1,8 +1,8 @@
 package com.epam.rd.fp.dao;
 
 import com.epam.rd.fp.model.User;
-import com.epam.rd.fp.model.enums.Language;
 import com.epam.rd.fp.model.enums.Role;
+import com.epam.rd.fp.service.DBManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,24 +11,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static java.sql.DriverManager.getConnection;
-
 public class UserDao {
+    private final DBManager dbManager;
     private static final Logger log = LogManager.getLogger(UserDao.class);
     private static final String SELECT_ALL_FROM_USER_TABLE = "SELECT * FROM users WHERE email = ? AND password = ?";
     private static final String INSERT_VALUES_INTO_USER_TABLE = "INSERT into users (first_name,last_name, email, role, password) values (?, ?, ?,?, ?)";
     private static final String SELECT_USER_ID_BY_EMAIL = "SELECT  id from users where email = ?";
 
+    public UserDao(DBManager dbManager) {
+        this.dbManager = dbManager;
+    }
+
     /**
      * A method to insert user into "user" table
      *
-     * @param conn your database connection
      * @param user a user to be inserted
      * @throws IllegalArgumentException when insertion fails
      */
-    public void insertUser(Connection conn, User user) {
+    public void insertUser(User user) {
         ResultSet rs;
-        try (PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement prepStat = conn.prepareStatement(INSERT_VALUES_INTO_USER_TABLE)) {
 
             prepStat.setString(1, user.getFirstName());
             prepStat.setString(2, user.getLastName());
@@ -54,19 +57,19 @@ public class UserDao {
     /**
      * A method to get user from "user" table by it's email and password
      *
-     * @param conn     your database connection
      * @param email    user's email
      * @param password user's password
      * @return user with email and password you've entered
      * @throws IllegalArgumentException when cannot get user by email and password
      */
-    public User getUser(Connection conn, String email, String password) {
+    public User getUser(String email, String password) {
         ResultSet rs;
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
 
-        try (PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement prepStat = conn.prepareStatement(SELECT_ALL_FROM_USER_TABLE);
         ) {
             prepStat.setString(1, email);
             prepStat.setString(2, password);
@@ -85,15 +88,15 @@ public class UserDao {
     /**
      * A method to get user from "user" table by it's id
      *
-     * @param conn your database connection
-     * @param id   user's id
+     * @param id user's id
      * @return user with id you've entered
      * @throws IllegalArgumentException when cannot get user by id
      */
-    public User getUser(Connection conn, int id) {
+    public User getUser(int id) {
         User user = new User();
         ResultSet rs;
-        try (PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM users WHERE id = ?");
         ) {
             prepStat.setInt(1, id);
             rs = prepStat.executeQuery();
@@ -129,10 +132,11 @@ public class UserDao {
         }
     }
 
-    public boolean isAlreadyRegistered(Connection conn, String email) {
+    public boolean isAlreadyRegistered(String email) {
         int userCount = 0;
         ResultSet rs;
-        try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS userCount FROM users where email = ?");
         ) {
             preparedStatement.setString(1, email);
             rs = preparedStatement.executeQuery();
@@ -145,4 +149,99 @@ public class UserDao {
             throw new IllegalArgumentException("Cannot check user's registration");
         }
     }
+
+
+    /**
+     * A method to get speaker id by id of topic connected with him
+     *
+     * @param topicId id of the topic whose speaker you want to get
+     * @return speaker's id
+     * @throws IllegalArgumentException when cannot get speaker id by topic id
+     */
+    public int getSpeakerIdByTopicId(int topicId) {
+        int speakerId = 0;
+        ResultSet rs;
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement prepStat = conn.prepareStatement("SELECT * FROM topic_speaker WHERE topic_id = ?");
+        ) {
+            prepStat.setInt(1, topicId);
+            rs = prepStat.executeQuery();
+            while (rs.next()) {
+                speakerId = rs.getInt("speaker_id");
+            }
+        } catch (SQLException e) {
+            log.error("Cannot get speaker's id", e);
+            throw new IllegalArgumentException("Cannot get speaker's id");
+        }
+        return speakerId;
+    }
+
+    /**
+     * A method to register user for a meeting
+     *
+     * @param userId    id of user to be registered
+     * @param meetingId the id of the meeting the user is registering for
+     * @throws IllegalArgumentException when user registration for a meeting fails
+     */
+    public void registerUserForAMeeting(int userId, int meetingId) {
+        int rowcount = 0;
+        ResultSet rs;
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?");
+        ) {
+            preparedStatement.setInt(1, meetingId);
+            preparedStatement.setInt(2, userId);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                rowcount = rs.getInt("rowcount");
+            }
+            if (rowcount != 0) {
+                log.info("User's already registered");
+                throw new IllegalArgumentException("User's already registered");
+            }
+            try (PreparedStatement prepStat = conn.prepareStatement("INSERT INTO registered_users (meeting_id, user_id) values (?, ?)");
+            ) {
+                prepStat.setInt(1, meetingId);
+                prepStat.setInt(2, userId);
+                prepStat.execute();
+            }
+        } catch (SQLException e) {
+            log.error("Cannot register user for a meeting", e);
+            throw new IllegalArgumentException("Cannot register user for a meeting");
+        }
+    }
+
+    /**
+     * A method to check if user is registered for a meeting
+     *
+     * @param userId    id of user to check registration
+     * @param meetingId id of meeting to check if user is registered
+     * @return true if user registered, false if user is not registered
+     * @throws IllegalArgumentException when cannot check topic for availability
+     */
+    public boolean isRegistered(int userId, int meetingId) {
+        int rowcount = 0;
+        ResultSet rs;
+        try {
+            try (Connection conn = dbManager.getConnection();
+                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT COUNT(*) AS rowcount FROM registered_users where meeting_id = ? AND user_id = ?")) {
+                preparedStatement.setInt(1, meetingId);
+                preparedStatement.setInt(2, userId);
+                rs = preparedStatement.executeQuery();
+                while (rs.next()) {
+                    rowcount = rs.getInt("rowcount");
+                }
+                if (rowcount != 0) {
+                    return true;
+                }
+                return false;
+            }
+        } catch (SQLException e) {
+            log.error("Cannot check user registration for a meeting", e);
+            throw new IllegalArgumentException("Cannot check user registration for a meeting");
+        }
+    }
+
+
 }

@@ -5,7 +5,7 @@ import com.epam.rd.fp.model.Location;
 import com.epam.rd.fp.service.LocationService;
 
 public class LocationServiceImpl implements LocationService {
-    private LocationDao locationDao;
+    private final LocationDao locationDao;
 
     public LocationServiceImpl(LocationDao locationDao) {
         this.locationDao = locationDao;
@@ -14,5 +14,10 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public void createLocation(Location location) {
         locationDao.insertLocation(location);
+    }
+
+    @Override
+    public Location getLocation(int locationId) {
+        return locationDao.getLocation(locationId);
     }
 }

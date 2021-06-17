@@ -43,11 +43,7 @@
 <br/>
 <div class="container-fluid">
 <%
-if (request.getParameter("firstName") == null && request.getParameter("lastName") == null){
     out.println("Welcome, " + request.getSession().getAttribute("firstName") + " " + request.getSession().getAttribute("lastName"));
-}else{
-out.println("Welcome," + request.getParameter("firstName") + " " + request.getParameter("lastName"));
-}
 %>
 <hr>
 <form action="getAllMeetings" method="get">
