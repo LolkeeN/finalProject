@@ -12,11 +12,11 @@ import com.epam.rd.fp.service.impl.TopicServiceImpl;
 import com.epam.rd.fp.service.impl.UserServiceImpl;
 
 public class ServiceFactoryImpl implements ServiceFactory {
-    DaoFactory daoFactory = new DaoFactoryImpl();
-    MeetingService meetingService;
-    LocationService locationService;
-    UserService userService;
-    TopicService topicService;
+   private DaoFactory daoFactory = new DaoFactoryImpl();
+   private MeetingService meetingService;
+   private LocationService locationService;
+   private UserService userService;
+   private TopicService topicService;
 
     @Override
     public MeetingService getMeetingService() {

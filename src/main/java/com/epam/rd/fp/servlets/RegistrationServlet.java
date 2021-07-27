@@ -42,7 +42,14 @@ public class RegistrationServlet extends HttpServlet {
         parameterList.add(firstName);
         parameterList.add(lastName);
         parameterList.add(roleValue);
-        checkForEmptyFields(request, response, parameterList);
+
+        for (String elem : parameterList) {
+            if (elem.equals("")) {
+                request.getSession().setAttribute("errorMessage", "Some fields are empty");
+                response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+                return;
+            }
+        }
 
 
         Role role = null;
@@ -79,6 +86,7 @@ public class RegistrationServlet extends HttpServlet {
                 log.error("user's already registered");
                 request.getSession().setAttribute("errorMessage", "User's already registered");
                 response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
+                return;
             } else {
                 userService.insertUser(user);
                 request.getSession().setAttribute("first_name", user.getFirstName());
@@ -96,15 +104,6 @@ public class RegistrationServlet extends HttpServlet {
         checkRoleAndRedirect(request, response, user);
     }
 
-    private void checkForEmptyFields(HttpServletRequest request, HttpServletResponse response, List<String> parameterList) throws IOException {
-        for (String elem : parameterList) {
-            if (elem.equals("")) {
-                request.getSession().setAttribute("errorMessage", "Some fields are empty");
-                response.sendRedirect(request.getContextPath() + "/errorPage.jsp");
-                return;
-            }
-        }
-    }
 
     static void checkRoleAndRedirect(HttpServletRequest request, HttpServletResponse response, User user) throws ServletException, IOException {
         if (user.getRole().getValue() == 1) {
@@ -113,7 +112,6 @@ public class RegistrationServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/adminPage.jsp");
         } else if (user.getRole().getValue() == 3) {
             request.getRequestDispatcher("speakerPage.jsp").forward(request, response);
-
         }
     }
 }
